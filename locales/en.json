@@ -148,6 +148,7 @@
         "printjob_start": {
             "content": "Printjob started: `${state.print_stats.filename}`",
             "title": "Print started",
+            "thumbnail": "thumbnail",
             "activity": "🖨️ start ${state.print_stats.filename}"
         },
         "printjob_complete": {
