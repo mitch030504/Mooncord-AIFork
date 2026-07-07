@@ -32,6 +32,7 @@ import CustomCommand from "./commands/CustomCommand";
 import PowerDeviceCommand from "./commands/PowerDeviceCommand";
 import HistoryCommand from "./commands/HistoryCommand";
 import TimelapseListCommand from "./commands/TimelapseListCommand";
+import BedMeshCommand from "./commands/BedMeshCommand";
 
 const COMMAND_CLASSES: Record<string, any> = {
     admin: AdminCommand,
@@ -58,7 +59,8 @@ const COMMAND_CLASSES: Record<string, any> = {
     execute: ExecuteCommand,
     power: PowerDeviceCommand,
     history: HistoryCommand,
-    timelapselist: TimelapseListCommand
+    timelapselist: TimelapseListCommand,
+    bedmesh: BedMeshCommand
 };
 
 export class CommandInteraction {
