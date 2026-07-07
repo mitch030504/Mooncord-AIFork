@@ -123,7 +123,7 @@ export default class SvgHelper {
         }
 
         // Add a color scale legend at the right
-        const legend_x = width - 80
+        const legend_x = width - 100
         const legend_y = height * 0.25
         const legend_w = 20
         const legend_h = height * 0.5
@@ -141,7 +141,7 @@ export default class SvgHelper {
         arr.push(`<rect x="${legend_x}" y="${legend_y}" width="${legend_w}" height="${legend_h}" fill="url(#legendGrad)" stroke="#444" stroke-width="1" />`)
 
         // Add labels
-        arr.push(`<g fill="#ffffff" font-family="sans-serif" font-size="12">
+        arr.push(`<g fill="#ffffff" font-family="Arial" font-size="12">
             <text x="${legend_x + 30}" y="${legend_y + 12}">${max.toFixed(2)} mm</text>
             <text x="${legend_x + 30}" y="${legend_y + legend_h / 2 + 5}">0.00 mm</text>
             <text x="${legend_x + 30}" y="${legend_y + legend_h}">${min.toFixed(2)} mm</text>
