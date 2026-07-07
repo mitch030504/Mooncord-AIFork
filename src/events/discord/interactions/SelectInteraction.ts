@@ -67,7 +67,11 @@ export class SelectInteraction {
             return
         }
 
-        await interaction.editReply(localeHelper.getCommandNotReadyError(interaction.user.tag))
+        try {
+            await interaction.editReply(localeHelper.getCommandNotReadyError(interaction.user.tag))
+        } catch {
+            // Ignore if the interaction reply was already deleted or expired
+        }
     }
 
 }

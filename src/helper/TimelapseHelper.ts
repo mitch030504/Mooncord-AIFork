@@ -123,15 +123,30 @@ export class TimelapseHelper {
         const tempPathShort = path.join(absolutePath, `compressed-${timelapseName}`)
         const functionCache = getEntry('function')
         let renderComplete = false
-        const ffmpegInputArguments = ffmpegConfig.ffmpeg_input_arguments
-        const ffmpegOutputArguments = ffmpegConfig.ffmpeg_output_arguments
+        const parseArguments = (argsList: any[]): string[] => {
+            if (!Array.isArray(argsList)) return []
+            const result: string[] = []
+            for (const arg of argsList) {
+                if (typeof arg === 'object' && arg !== null) {
+                    const key = String(arg.key || '').replace(/['"]/g, '')
+                    const value = String(arg.value || '').replace(/['"]/g, '')
+                    result.push(`${key}:${value}`)
+                } else if (typeof arg === 'string') {
+                    result.push(arg.replace(/['"]/g, ''))
+                }
+            }
+            return result
+        }
+
+        const ffmpegInputArguments = parseArguments(ffmpegConfig.ffmpeg_input_arguments)
+        const ffmpegOutputArguments = parseArguments(ffmpegConfig.ffmpeg_output_arguments)
 
         ffmpegOutputArguments.push(`-vf scale=${ffmpegConfig.ffmpeg_height}:-1`)
 
         logRegular(`Compress Timelapse: ${timelapseName}`)
         if (functionCache.current_status === 'printing') {
             logNotice('use printing arguments for ffmpeg because a print is running')
-            for (const ffmpegArgument of ffmpegConfig.ffmpeg_arguments_printing) {
+            for (const ffmpegArgument of parseArguments(ffmpegConfig.ffmpeg_arguments_printing)) {
                 ffmpegOutputArguments.push(ffmpegArgument)
             }
         }
@@ -142,7 +157,7 @@ export class TimelapseHelper {
             .format('mp4')
             .addInput(timelapseInput)
 
-        if (ffmpegInputArguments) {
+        if (ffmpegInputArguments.length > 0) {
             ffmpegRender
                 .addInputOptions(ffmpegInputArguments)
         }
@@ -162,7 +177,9 @@ export class TimelapseHelper {
 
         await waitUntil(() => renderComplete === true, {timeout: Number.POSITIVE_INFINITY})
 
-        logSuccess(`Compressed Timelapse: ${timelapseName}`)
+        const fileStats = statSync(tempPathShort)
+        const fileSizeInMegabytes = Math.round((fileStats.size / (1024 * 1000)) * 100) / 100
+        logSuccess(`Compressed Timelapse: ${timelapseName} (size: ${fileSizeInMegabytes}mb)`)
 
         unlinkSync(timelapseInput)
 

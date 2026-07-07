@@ -5,8 +5,9 @@ import {getEntry} from "../../../../utils/CacheUtil";
 import {findValueByPartial} from "../../../../helper/DataHelper";
 import {TimelapseHelper} from "../../../../helper/TimelapseHelper";
 import {resolve} from "path";
-import {unlinkSync} from "fs";
+import {statSync, unlinkSync} from "fs";
 import BaseSelection from "../abstracts/BaseSelection";
+import {logError} from "../../../../helper/LoggerHelper";
 
 export class DownloadTimelapse extends BaseSelection {
     selectionId = 'timelapse_download'
@@ -36,8 +37,45 @@ export class DownloadTimelapse extends BaseSelection {
 
         const timelapseContent = await timelapseHelper.downloadTimelapse(timelapseFile, timelapseMessage)
 
-        await currentMessage.edit(timelapseContent.message)
+        try {
+            const fileStats = statSync(timelapseContent.path)
+            const fileSizeInBytes = fileStats.size
+            const uploadLimit = this.config.getUploadLimit()
 
-        unlinkSync(timelapseContent.path)
+            if (fileSizeInBytes > uploadLimit) {
+                logError(`${timelapseFile} Timelapse too big, file: ${fileSizeInBytes}bytes, Limit: ${uploadLimit}bytes`)
+                const errorMessage = this.locale.messages.errors.file_too_large
+                    .replace(/(\${filename})/g, `\`${timelapseFile}\``)
+                
+                await currentMessage.edit({
+                    content: errorMessage,
+                    components: timelapseContent.message.components,
+                    embeds: [],
+                    files: []
+                })
+            } else {
+                await currentMessage.edit(timelapseContent.message)
+            }
+        } catch (error: any) {
+            logError(`Failed to upload timelapse:`)
+            logError(error?.stack || error)
+            const errorMessage = this.locale.messages.errors.command_failed || 'An error occurred!'
+            try {
+                await currentMessage.edit({
+                    content: errorMessage,
+                    components: [],
+                    embeds: [],
+                    files: []
+                })
+            } catch (editError) {
+                logError(`Failed to send fallback error message: ${editError}`)
+            }
+        } finally {
+            try {
+                unlinkSync(timelapseContent.path)
+            } catch (unlinkError) {
+                logError(`Failed to unlink temp file ${timelapseContent.path}: ${unlinkError}`)
+            }
+        }
     }
 }
