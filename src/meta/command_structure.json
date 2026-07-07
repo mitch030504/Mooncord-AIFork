@@ -103,6 +103,7 @@
     }
   },
   "reset_database": {},
+  "saveconfig": {},
   "editchannel": {
     "channel": {
       "type": "channel",

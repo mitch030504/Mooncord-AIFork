@@ -42,13 +42,13 @@ const COMMAND_CLASSES: Record<string, any> = {
     temp: TempCommand,
     restart: RestartCommand,
     listlogs: ListLogsCommand,
-    userid: UserIdCommand,
+    get_user_id: UserIdCommand,
     reset_database: ResetDatabaseCommand,
     notify: NotifyCommand,
     emergency_stop: EmergencyStopCommand,
     status: StatusCommand,
     editchannel: EditChannelCommand,
-    gcodelist: GcodeListCommand,
+    listgcodes: GcodeListCommand,
     printjob: PrintjobCommand,
     systeminfo: SystemInfoCommand,
     preheat: PreheatCommand,
@@ -59,8 +59,8 @@ const COMMAND_CLASSES: Record<string, any> = {
     execute: ExecuteCommand,
     power: PowerDeviceCommand,
     history: HistoryCommand,
-    timelapselist: TimelapseListCommand,
-    bedmesh: BedMeshCommand
+    bedmesh: BedMeshCommand,
+    listtimelapses: TimelapseListCommand
 };
 
 export class CommandInteraction {

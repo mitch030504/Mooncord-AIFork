@@ -771,6 +771,10 @@
             "description": "clear the Database.",
             "command": "reset"
         },
+        "saveconfig": {
+            "description": "Save the current Klipper configuration.",
+            "command": "saveconfig"
+        },
         "bedmesh": {
             "description": "Visualize the active bed leveling mesh.",
             "command": "bedmesh"
