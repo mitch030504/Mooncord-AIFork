@@ -166,5 +166,6 @@
   "temp": {},
   "bedmesh": {},
   "history": {},
-  "filaments": {}
+  "filaments": {},
+  "fulldump": {}
 }

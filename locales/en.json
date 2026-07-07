@@ -948,6 +948,10 @@
         "filaments": {
             "description": "Lists all the filaments currently in use (Qidi Box & External)",
             "command": "filaments"
+        },
+        "fulldump": {
+            "description": "Download a complete CSV dump of all Moonraker states",
+            "command": "fulldump"
         }
     },
     "graph": {

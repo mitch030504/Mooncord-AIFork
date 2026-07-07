@@ -34,10 +34,12 @@ import HistoryCommand from "./commands/HistoryCommand";
 import TimelapseListCommand from "./commands/TimelapseListCommand";
 import BedMeshCommand from "./commands/BedMeshCommand";
 import FilamentsCommand from "./commands/FilamentsCommand";
+import FullDumpCommand from "./commands/FullDumpCommand";
 
 const COMMAND_CLASSES: Record<string, any> = {
     admin: AdminCommand,
     filaments: FilamentsCommand,
+    fulldump: FullDumpCommand,
     fileinfo: FileInfoCommand,
     info: InfoCommand,
     dump: DumpCommand,
