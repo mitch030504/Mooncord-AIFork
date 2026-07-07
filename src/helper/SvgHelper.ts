@@ -29,6 +29,30 @@ export default class SvgHelper {
         return arr;
     }
 
+    public calculateHeatmap(matrix: number[][], min: number, max: number, width: number, height: number): string[] {
+        const arr: string[] = []
+        const rows = matrix.length
+        if (rows === 0) return arr
+        const cols = matrix[0]!.length
+        if (cols === 0) return arr
+
+        const cellWidth = width / cols
+        const cellHeight = height / rows
+        const range = max - min || 1
+
+        for (let y = 0; y < rows; y++) {
+            for (let x = 0; x < cols; x++) {
+                const val = matrix[y]![x]!
+                const normalized = Math.max(0, Math.min(1, (val - min) / range))
+                const hue = 240 - (normalized * 240)
+                const color = `hsl(${hue}, 100%, 50%)`
+
+                arr.push(`<rect x="${x * cellWidth}" y="${(rows - 1 - y) * cellHeight}" width="${cellWidth + 0.5}" height="${cellHeight + 0.5}" fill="${color}" stroke="rgba(0,0,0,0.3)" stroke-width="0.5"></rect>`)
+            }
+        }
+        return arr
+    }
+
     public convertToCoords(values: [], max: number, offsetHeight = 400, resHeight = 600) {
         const coords = []
         let widthIndex = 0

@@ -134,6 +134,10 @@
             "content": "Printer Notification",
             "title": "Notification"
         },
+        "bedmesh": {
+            "title": "Bed Leveling Mesh",
+            "description": "Variance: `${variance}`mm\nMin: `${min}`mm\nMax: `${max}`mm\nProfile: `${profile}`"
+        },
         "printjob_start_request": {
             "title": "Start Print Job?",
             "description": "Print Time: ${estimated_time}\nSlicer: ${slicer}\nSlicer Version: ${slicer_version}\nHeight: ${object_height}mm"
@@ -766,6 +770,10 @@
         "reset_database": {
             "description": "clear the Database.",
             "command": "reset"
+        },
+        "bedmesh": {
+            "description": "Visualize the active bed leveling mesh.",
+            "command": "bedmesh"
         },
         "editchannel": {
             "description": "Add or Remove broadcast channel.",
