@@ -22,13 +22,14 @@ export default class FilamentsCommand extends BaseCommand {
             const multiColorController = response?.result?.status?.multi_color_controller || {};
             const boxSensor = response?.result?.status?.["aht20_f heater_box1"] || {};
 
-            const embedHelper = new EmbedHelper();
-            const embed = await embedHelper.generateEmbed('filaments');
+                       const embedHelper = new EmbedHelper();
+            const embedData = await embedHelper.generateEmbed('filaments');
+            const embed = embedData.embed.embeds[0];
 
             // Check if Qidi multi_color_controller is present
             if (!multiColorController.slots) {
                 embed.setDescription("Qidi Box multi-color controller not found on this printer.\nThis command is only compatible with QIDI printers equipped with the QIDI Box / CFS system.");
-                await interaction.editReply({embeds: [embed]});
+                await interaction.editReply(embedData.embed);
                 return;
             }
 
@@ -130,7 +131,7 @@ export default class FilamentsCommand extends BaseCommand {
             }
 
             embed.setDescription(description);
-            await interaction.editReply({embeds: [embed]});
+            await interaction.editReply(embedData.embed);
         } catch (error) {
             logError(`Failed to execute /filaments: ${error}`);
             await interaction.editReply(this.locale.messages.errors.command_failed);
