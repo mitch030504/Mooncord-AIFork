@@ -8,15 +8,13 @@ import {sleep} from "../../../helper/DataHelper";
 import {TempTargetModal} from "./modals/TempTargetModal";
 import {ExecuteModal} from "./modals/ExecuteModal";
 
+const MODAL_CLASSES = [
+    TempTargetModal, ExecuteModal
+];
 
 export class ModalInteraction {
 
-    // @ts-ignore
-    public constructor(interaction: Interaction) {
-        void this.execute(interaction)
-    }
-
-    private async execute(interaction: Interaction) {
+    public async execute(interaction: Interaction) {
         if (!interaction.isModalSubmit()) {
             return
         }
@@ -30,7 +28,7 @@ export class ModalInteraction {
         let logFeedback = modalId
 
         for (const componentsRow of interaction.components) {
-            for (const component of componentsRow.components) {
+            for (const component of (componentsRow as any).components) {
                 logFeedback = `${logFeedback} ${component.customId}:${component.value}`
             }
         }
@@ -45,9 +43,9 @@ export class ModalInteraction {
             logWarn(`${interaction.user.tag} doesnt have the permission for: ${modalId}`)
             return;
         }
-
-        void new TempTargetModal().executeModal(interaction, modalId)
-        void new ExecuteModal().executeModal(interaction, modalId)
+        await Promise.allSettled(MODAL_CLASSES.map(Modal => 
+            new Modal().executeModal(interaction, modalId)
+        ))
 
         await sleep(1_000)
 

@@ -7,7 +7,7 @@ import {ImageHelper} from "../ImageHelper";
 export default class PageListGraph extends BaseGraph {
     filename = 'pageGraph.png'
 
-    protected finishedParameters = {}
+    protected finishedParameters: Record<string, any> = {}
     protected colors = this.config.getColors(/(.*?)/g, true)
     protected imageHelper = new ImageHelper()
 

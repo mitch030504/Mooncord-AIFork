@@ -1,19 +1,27 @@
-const fs = require('fs');
-const path = require('path');
+import {readFileSync, writeFileSync} from 'fs';
+import {resolve} from 'path';
 
 console.log("starting json config migration to cfg config...")
 
 const args = process.argv.slice(2)
 const configPath = args[0]
 
+if (!configPath) {
+    console.error("missing config path argument")
+    process.exit(1)
+}
+
 console.log(`reading json config: ${configPath}/mooncord.json`)
 
-const legacyFile = fs.readFileSync(`${configPath}/mooncord.json`, {encoding: "utf-8"})
-const legacyConfig = JSON.parse(legacyFile)
+const legacyFile = readFileSync(`${configPath}/mooncord.json`, {encoding: "utf-8"})
+const legacyConfig = JSON.parse(legacyFile) as {
+    connection: { moonraker_url: string; moonraker_token: string; bot_token: string }
+    tmp_path: string
+}
 
 console.log('read base config...')
 
-let newConfig = fs.readFileSync(path.resolve(__dirname, '../../scripts/mooncord.cfg'), {encoding: "utf-8"})
+let newConfig = readFileSync(resolve(__dirname, '../../scripts/mooncord.cfg'), {encoding: "utf-8"})
 
 console.log('update base config...')
 
@@ -26,4 +34,4 @@ newConfig =
 
 console.log('write new config, keeping old json config as backup...')
 
-fs.writeFileSync(`${configPath}/mooncord.cfg`, newConfig, {encoding: 'utf8', flag: 'w+'})
+writeFileSync(`${configPath}/mooncord.cfg`, newConfig, {encoding: 'utf8', flag: 'w+'})

@@ -8,14 +8,20 @@ export default class DumpCommand extends BaseCommand {
     ephemeral = true
 
     async handleCommand(interaction: ChatInputCommandInteraction) {
-        const sectionArgument = interaction.options.getString(this.syntaxLocale.commands.dump.options.section.name)
+        const sectionArgument = interaction.options.getString(this.syntaxLocale.commands.dump.options.section.name)!
+
+        const allowedSections = ['cache', 'database', 'database_ws']
+        if (!sectionArgument || !allowedSections.includes(sectionArgument)) {
+            await interaction.editReply(this.locale.messages.errors.unknown_command)
+            return
+        }
 
         if (sectionArgument === 'cache') {
-            void await CacheUtil.dump()
+            await CacheUtil.dump()
         } else if (sectionArgument === 'database') {
-            void await this.database.dump()
+            await this.database.dump()
         } else if (sectionArgument === 'database_ws') {
-            void await this.database.dumpWS()
+            await this.database.dumpWS()
         }
 
         const attachment = new AttachmentBuilder(path.resolve(__dirname, `../${sectionArgument}_dump.json`), {name: `${sectionArgument}.json`})

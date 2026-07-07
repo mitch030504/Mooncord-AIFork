@@ -11,13 +11,13 @@ import {getEntry} from "../utils/CacheUtil";
 export class NotificationHelper {
     protected databaseUtil = app.getDatabase()
     protected configHelper = new ConfigHelper()
-    protected broadcastList = {}
+    protected broadcastList: Record<string, any> = {}
     protected notifyList = []
-    protected discordClient: DiscordClient
+    protected discordClient!: DiscordClient
     protected localeHelper = new LocaleHelper()
     protected locale = this.localeHelper.getLocale()
 
-    public async broadcastMessage(message) {
+    public async broadcastMessage(message: any) {
         if (!this.getEntries()) {
             return
         }
@@ -82,7 +82,7 @@ export class NotificationHelper {
         return true
     }
 
-    private async notifyUsers(message) {
+    private async notifyUsers(message: any) {
         if (this.discordClient === null) {
             return
         }
@@ -100,7 +100,7 @@ export class NotificationHelper {
         }
     }
 
-    private async broadcastGuilds(message) {
+    private async broadcastGuilds(message: any) {
         for (const guildId in this.broadcastList) {
             const guildMeta = this.broadcastList[guildId]
             try {
@@ -123,7 +123,7 @@ export class NotificationHelper {
         }
     }
 
-    private async broadcastChannels(channels, message) {
+    private async broadcastChannels(channels: any, message: any) {
         for (let channel of channels) {
             if (channel.constructor.name === 'Array') {
                 channel = channel[1]

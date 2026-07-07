@@ -5,6 +5,7 @@ import * as util from 'util'
 import {DiscordClient} from './clients/DiscordClient'
 import {MoonrakerClient} from './clients/MoonrakerClient'
 import {
+    gracefulShutdown,
     hookProcess,
     logCustom,
     logEmpty,
@@ -29,8 +30,6 @@ import {PromptHelper} from "./helper/PromptHelper";
 const args = process.argv.slice(2)
 
 let firstLoad = true
-
-Object.assign(global, {WebSocket: require('ws')})
 
 tempHookLog()
 hookProcess()
@@ -102,7 +101,8 @@ async function init() {
 
     if (!setupUser) {
         logError(`missing last argument for the setup mode, example: npm start /PATH/TO/CONFIG/ setup USERNAME`)
-        process.exit(5)
+        gracefulShutdown(1, 'missing setup argument')
+        return
     }
 
     if (!setupUser.includes('#')) {
@@ -110,9 +110,7 @@ async function init() {
     }
     setData('setup_user', setupUser)
 
-    for (let i = 0; i < 1024; i++) {
-        logEmpty()
-    }
+    process.stdout.write('\x1B[2J\x1B[H')
 
     if (process.platform === "win32") {
         const rl = createInterface({

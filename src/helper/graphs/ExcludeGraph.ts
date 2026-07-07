@@ -7,7 +7,7 @@ import BaseGraph from "./BaseGraph";
 export class ExcludeGraph extends BaseGraph {
     filename = 'excludeGraph.png'
 
-    public async renderGraph(currentObject: string = undefined) {
+    public async renderGraph(currentObject?: string) {
         const stateCache = getEntry('state')
         const excludeObjects = stateCache.exclude_object.objects
         const excludedObjects = stateCache.exclude_object.excluded_objects

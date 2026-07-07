@@ -1,9 +1,11 @@
 'use strict'
 
-import {Guild, Interaction, MessageFlagsBitField, User} from "discord.js";
+import {Guild, MessageFlagsBitField, User} from "discord.js";
 import {ConfigHelper} from "./ConfigHelper";
 import {DatabaseUtil} from "../utils/DatabaseUtil";
 import {LocaleHelper} from "./LocaleHelper";
+
+type RepliableInteraction = import("discord.js").ChatInputCommandInteraction | import("discord.js").ButtonInteraction | import("discord.js").StringSelectMenuInteraction | import("discord.js").UserSelectMenuInteraction | import("discord.js").ModalSubmitInteraction
 
 export class PermissionHelper {
     protected config = new ConfigHelper()
@@ -25,14 +27,12 @@ export class PermissionHelper {
         }
     }
 
-    public async sendNoPermissionMessage(interaction: Interaction) {
+    public async sendNoPermissionMessage(interaction: RepliableInteraction) {
         if(this.config.showNoPermissionPrivate()) {
-            // @ts-ignore
             await interaction.reply({
                 content: this.localeHelper.getNoPermission(interaction.user.tag)
             })
         } else {
-            // @ts-ignore
             await interaction.reply({
                 content: this.localeHelper.getNoPermission(interaction.user.tag),
                 flags: MessageFlagsBitField.Flags.Ephemeral
@@ -40,7 +40,7 @@ export class PermissionHelper {
         }
     }
 
-    public hasPermission(user: User, guild: Guild, command: string) {
+    public hasPermission(user: User, guild: Guild | null, command: string) {
         let commandPermission = this.config.getEntriesByFilter(new RegExp(`^command ${command}`, 'g'))[0]
         const buttonPermission = this.config.getEntriesByFilter(new RegExp(`^button ${command}`, 'g'))[0]
         const selectPermission = this.config.getEntriesByFilter(new RegExp(`^select_menu ${command}`, 'g'))[0]
@@ -95,12 +95,12 @@ export class PermissionHelper {
         return false
     }
 
-    public hasCommandPermission(user: User, guild: Guild, command: string) {
+    public hasCommandPermission(user: User, guild: Guild | null, command: string) {
         const commandPermission = this.permissions.commands[command]
         return this.hasSectionPermission(user, guild, commandPermission)
     }
 
-    public isGuildAdmin(user: User, guild: Guild) {
+    public isGuildAdmin(user: User, guild: Guild | null) {
         const member = this.getMember(user, guild)
 
         if (typeof member !== 'undefined') {
@@ -108,7 +108,7 @@ export class PermissionHelper {
         }
     }
 
-    public isBotAdmin(user: User, guild: Guild) {
+    public isBotAdmin(user: User, guild: Guild | null) {
         const member = this.getMember(user, guild)
 
         if (this.botAdmins.users.includes(user.id)) {
@@ -130,18 +130,18 @@ export class PermissionHelper {
         return false
     }
 
-    public isController(user: User, guild: Guild) {
+    public isController(user: User, guild: Guild | null) {
         return this.controllers.includes(user.id);
     }
 
-    protected getMember(user: User, guild: Guild) {
+    protected getMember(user: User, guild: Guild | null) {
         if (guild === null) {
             return
         }
         return guild.members.cache.get(user.id)
     }
 
-    protected hasSectionPermission(user: User, guild: Guild, permissions) {
+    protected hasSectionPermission(user: User, guild: Guild | null, permissions: any) {
         if (typeof permissions === 'undefined') {
             return false
         }

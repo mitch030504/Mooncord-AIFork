@@ -1,6 +1,6 @@
 'use strict'
 
-import {Client} from "discord.js";
+import {Client, Events} from "discord.js";
 import {logError, logRegular} from "../../helper/LoggerHelper";
 import {getEntry, setData} from "../../utils/CacheUtil";
 import {getDatabase} from "../../Application";
@@ -9,7 +9,7 @@ import {EmbedHelper} from "../../helper/EmbedHelper";
 export class VerifyHandler {
 
     public constructor(discordClient: Client) {
-        discordClient.on("messageCreate", async message => {
+        discordClient.on(Events.MessageCreate, async message => {
             if (message.author.id === getEntry("discord_client").clientId) {
                 return
             }

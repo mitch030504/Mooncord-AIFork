@@ -6,7 +6,7 @@ export default class ExecuteCommand extends BaseCommand {
     defer = false
 
     async handleCommand(interaction: ChatInputCommandInteraction) {
-        const gcodeArgument = interaction.options.getString(this.syntaxLocale.commands.execute.options.gcode.name)
+        const gcodeArgument = interaction.options.getString(this.syntaxLocale.commands.execute.options.gcode.name)!
 
         if (gcodeArgument === null) {
             const modal = await this.modalHelper.generateModal('execute_modal')
@@ -16,7 +16,7 @@ export default class ExecuteCommand extends BaseCommand {
 
         await interaction.deferReply()
 
-        const gcodeValid = await this.consoleHelper.executeGcodeCommands([gcodeArgument], interaction.channel)
+        const gcodeValid = await this.consoleHelper.executeGcodeCommands([gcodeArgument], interaction.channel as any)
 
         let answer = this.locale.messages.answers.execute_successful
             .replace(/\${username}/g, interaction.user.tag)

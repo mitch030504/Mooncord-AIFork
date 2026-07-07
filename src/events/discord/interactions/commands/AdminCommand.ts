@@ -13,11 +13,11 @@ export default class AdminCommand extends BaseCommand {
         const botAdmins = permissions.admins
 
         const section = (role === null) ? 'users' : 'roles'
-        const id = (role === null) ? user.id : role.id
-        const mention = (role === null) ? user.tag : role.name
+        const id = (role === null) ? user?.id : role.id
+        const mention = (role === null) ? user?.tag : role.name
 
         if (botAdmins[section].includes(id)) {
-            removeFromArray(botAdmins[section], id)
+            removeFromArray(botAdmins[section], id as string)
 
             const message = this.locale.messages.answers.admin.removed
                 .replace(/(\${username})/g, interaction.user.tag)
@@ -25,7 +25,7 @@ export default class AdminCommand extends BaseCommand {
 
             await interaction.editReply(message)
         } else {
-            botAdmins[section].push(id)
+            botAdmins[section].push(id as string)
 
             const message = this.locale.messages.answers.admin.added
                 .replace(/(\${username})/g, interaction.user.tag)

@@ -7,7 +7,7 @@ import {logEmpty, logSuccess} from "../../../helper/LoggerHelper";
 
 export class StateUpdateNotification {
 
-    public async parse(message) {
+    public async parse(message: any) {
         if (typeof (message.method) === 'undefined') {
             return false
         }

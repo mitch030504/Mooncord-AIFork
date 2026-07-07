@@ -4,7 +4,7 @@ import {Message, User} from "discord.js";
 import BaseHandler from "../abstracts/BaseHandler";
 
 export class MacroHandler extends BaseHandler {
-    async isValid(message: Message, user: User, data, interaction = null) {
+    async isValid(message: Message, user: User, data: any, interaction: any = null) {
         if (typeof data.macros === 'undefined') {
             return false
         }
@@ -15,7 +15,7 @@ export class MacroHandler extends BaseHandler {
         return true
     }
 
-    async handleHandler(message: Message, user: User, data, interaction = null) {
+    async handleHandler(message: Message, user: User, data: any, interaction: any = null) {
         const gcodeValid = await this.consoleHelper.executeGcodeCommands(data.macros,
             interaction.channel,
             data.macro_message === true)

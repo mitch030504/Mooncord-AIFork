@@ -41,7 +41,7 @@ export class EmbedHelper {
         }
     }
 
-    public getAuthorName(embed: Embed) {
+    public getAuthorName(embed: any) {
         if (embed.author === null) {
             return ''
         }
@@ -49,7 +49,7 @@ export class EmbedHelper {
         return embed.author.name
     }
 
-    public getTitle(embed: Embed) {
+    public getTitle(embed: any) {
         if (embed.title === null) {
             return ''
         }
@@ -57,7 +57,7 @@ export class EmbedHelper {
         return embed.title
     }
 
-    public async generateEmbed(embedID: string, providedPlaceholders = null, providedFields = null, providedValues = null) {
+    public async generateEmbed(embedID: string, providedPlaceholders: any = null, providedFields: any = null, providedValues: any = null) {
         return await new TemplateHelper().parseTemplate('embed', embedID, providedPlaceholders, providedFields, providedValues)
     }
 }

@@ -5,13 +5,13 @@ import {getEntry} from "../../../../utils/CacheUtil";
 import BaseHandler from "../abstracts/BaseHandler";
 
 export class CameraSettingHandler extends BaseHandler {
-    async isValid(message: Message, user: User, data, interaction = null) {
+    async isValid(message: Message, user: User, data: any, interaction: any = null) {
         return !(!data.functions.includes("camera_mirror_horizontal") &&
             !data.functions.includes("camera_mirror_vertical") &&
             !data.functions.includes("camera_rotate"));
     }
 
-    async handleHandler(message: Message, user: User, data, interaction = null) {
+    async handleHandler(message: Message, user: User, data: any, interaction: any = null) {
         const cache = getEntry('webcam')
         const webcamData = cache.entries[cache.active]
 

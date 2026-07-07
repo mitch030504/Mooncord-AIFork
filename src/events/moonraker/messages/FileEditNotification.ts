@@ -5,7 +5,7 @@ import {logNotice} from "../../../helper/LoggerHelper";
 
 export class FileEditNotification {
 
-    public parse(message) {
+    public parse(message: any) {
         if (typeof (message.method) === 'undefined') {
             return false
         }

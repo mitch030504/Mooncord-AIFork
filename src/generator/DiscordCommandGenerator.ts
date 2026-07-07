@@ -45,15 +45,15 @@ export class DiscordCommandGenerator {
 
     public async registerCommands() {
         const rest = App.getDiscordClient().getRest()
-        const commandList = []
-        const commandCache = {}
+        const commandList: any[] = []
+        const commandCache: Record<string, any> = {}
         const commandStructureFile = readFileSync(path.resolve(__dirname, '../src/meta/command_structure.json'))
         const commandStructure = JSON.parse(commandStructureFile.toString('utf8'))
         const customCommandStructure = this.getCustomCommandStructure()
         mergeDeep(commandStructure, customCommandStructure)
 
         logRegular('get current commands...')
-        const currentCommands = await rest.get(Routes.applicationCommands(getEntry("discord_client").clientId))
+        const currentCommands: any[] = await rest.get(Routes.applicationCommands(getEntry("discord_client").clientId)) as any[]
         const commandKeys = []
 
         for (const commandIndex in commandStructure) {
@@ -69,7 +69,7 @@ export class DiscordCommandGenerator {
 
             logRegular(`Register Command ${command.name}...`)
 
-            new Promise(async (resolve, reject) => {
+            void (async () => {
                 try {
                     await App.getDiscordClient().getClient().application?.commands?.create(command)
                 } catch (error) {
@@ -77,24 +77,23 @@ export class DiscordCommandGenerator {
                     logError(JSON.stringify(error, Object.getOwnPropertyNames(error)))
                     logError(`Command Data: ${JSON.stringify(command, null, 4)}`)
                 }
-            })
+            })()
         }
 
-        // @ts-ignore
         for (const currentCommand of currentCommands) {
             if (!commandKeys.includes(currentCommand.name)) {
                 logRegular(`Unregister Command ${currentCommand.name}...`)
                 const deleteUrl = `${Routes.applicationCommands(getEntry("discord_client").clientId)}/${currentCommand.id}`;
 
-                new Promise(async (resolve, reject) => {
+                void (async () => {
                     try {
-                        await rest.delete(<RouteLike>deleteUrl)
+                        await rest.delete(deleteUrl as RouteLike)
                     } catch (error) {
                         logError(`An Error occured while unregistering the command ${currentCommand.name}`)
                         logError(JSON.stringify(error, Object.getOwnPropertyNames(error)))
                         logError(`Command Data: ${JSON.stringify(currentCommand, null, 4)}`)
                     }
-                })
+                })()
             }
         }
 
@@ -183,12 +182,12 @@ export class DiscordCommandGenerator {
         }
 
         const optionBuilder = {
-            type: commandOptionsTypes[optionMeta.type],
+            type: (commandOptionsTypes as any)[optionMeta.type],
             name: syntaxMeta.options[option].name,
             description: messageMeta.options[option].description,
             options: [],
             required: false,
-            choices: [],
+            choices: [] as any[],
             min_value: syntaxMeta.options[option].min_value,
             max_value: syntaxMeta.options[option].max_value
         }
@@ -225,7 +224,7 @@ export class DiscordCommandGenerator {
 
     private getCustomCommandStructure() {
         const customCommandsConfig = this.config.getEntriesByFilter(/^command /g, true)
-        const customCommands = {}
+        const customCommands: Record<string, any> = {}
         const commandStructure = this.getConfigStructure()
 
         for (const name of Object.keys(customCommandsConfig)) {

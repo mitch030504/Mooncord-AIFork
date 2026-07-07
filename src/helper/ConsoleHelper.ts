@@ -61,7 +61,7 @@ export class ConsoleHelper {
             valid = 0
 
             const failedDescription = `\`\`\`${cache.error_commands.join('\n')}\`\`\``
-            const failedEmbed = await embedHelper.generateEmbed('execute_error', {gcode_commands: failedDescription})
+            const failedEmbed = await embedHelper.generateEmbed('execute_error', undefined, undefined, {gcode_commands: failedDescription})
             await channel.send(failedEmbed.embed)
         }
 
@@ -69,7 +69,7 @@ export class ConsoleHelper {
             valid = 0
 
             const unknownDescription = `\`\`\`${cache.unknown_commands.join('\n')}\`\`\``
-            const unknownEmbed = await embedHelper.generateEmbed('execute_unknown', {gcode_commands: unknownDescription})
+            const unknownEmbed = await embedHelper.generateEmbed('execute_unknown', undefined, undefined, {gcode_commands: unknownDescription})
             await channel.send(unknownEmbed.embed)
         }
 

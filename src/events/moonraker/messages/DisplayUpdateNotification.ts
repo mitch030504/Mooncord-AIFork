@@ -2,13 +2,29 @@
 
 import {EmbedHelper} from "../../../helper/EmbedHelper";
 import {ConfigHelper} from "../../../helper/ConfigHelper";
-import {logRegular} from "../../../helper/LoggerHelper";
+import {logError, logRegular} from "../../../helper/LoggerHelper";
 import {NotificationHelper} from "../../../helper/NotificationHelper";
 import Parse from "regex-parser";
 
+const MAX_REGEX_PATTERN_LENGTH = 200
+
+function safeParse(pattern: string): RegExp | null {
+    if (typeof pattern !== 'string' || pattern.length > MAX_REGEX_PATTERN_LENGTH) {
+        logError(`rejected oversized/invalid regex pattern (len=${pattern?.length ?? 0})`)
+        return null
+    }
+    try {
+        return Parse(pattern)
+    } catch (error) {
+        logError(`failed to compile regex pattern: ${pattern}`)
+        logError(JSON.stringify(error, Object.getOwnPropertyNames(error as Error)))
+        return null
+    }
+}
+
 export class DisplayUpdateNotification {
 
-    public async parse(message) {
+    public async parse(message: any) {
         if (typeof (message.method) === 'undefined') {
             return false
         }
@@ -49,14 +65,16 @@ export class DisplayUpdateNotification {
         let whitelistValid = (whitelist.length <= 0)
 
         for (const blacklistItem of blacklist) {
-            const blacklistRegex = Parse(blacklistItem)
+            const blacklistRegex = safeParse(blacklistItem)
+            if (blacklistRegex === null) continue
             if (blacklistRegex.test(displayMessage)) {
                 return false
             }
         }
 
         for (const whitelistItem of whitelist) {
-            const whitelistRegex = Parse(whitelistItem)
+            const whitelistRegex = safeParse(whitelistItem)
+            if (whitelistRegex === null) continue
             if (whitelistRegex.test(displayMessage)) {
                 whitelistValid = true
             }

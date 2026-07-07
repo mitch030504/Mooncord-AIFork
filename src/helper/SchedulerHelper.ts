@@ -16,11 +16,11 @@ export class SchedulerHelper {
     protected configHelper = new ConfigHelper()
     protected functionCache = getEntry('function')
     protected statusHelper = new StatusHelper()
-    protected moonrakerClient: MoonrakerClient
-    protected highScheduler: NodeJS.Timer
-    protected moderateScheduler: NodeJS.Timer
-    protected statusScheduler: NodeJS.Timer
-    protected loadScheduler: NodeJS.Timer
+    protected moonrakerClient!: MoonrakerClient
+    protected highScheduler: ReturnType<typeof setInterval> | undefined
+    protected moderateScheduler: ReturnType<typeof setInterval> | undefined
+    protected statusScheduler: ReturnType<typeof setInterval> | undefined
+    protected loadScheduler: ReturnType<typeof setInterval> | undefined
     protected usageHelper = new UsageHelper()
     protected tempHelper = new TempHelper()
     protected promptHelper = new PromptHelper()
@@ -52,7 +52,7 @@ export class SchedulerHelper {
                 return
 
             updateData('moonraker_client', {
-                'event_count': this.moonrakerClient.getWebsocket().underlyingWebsocket['_eventsCount']
+                'event_count': (this.moonrakerClient.getWebsocket().underlyingWebsocket as any)['_eventsCount']
             })
         }, 250)
     }
@@ -84,9 +84,6 @@ export class SchedulerHelper {
             await this.usageHelper.updateDiskUsage()
 
             await updateAllRestEndpoints()
-
-            if (global.gc)
-                global.gc()
         }, 60000)
     }
 

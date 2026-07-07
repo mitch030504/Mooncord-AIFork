@@ -4,7 +4,8 @@ const args = process.argv.slice(2)
 
 const config = {
     entryPoints: ['src/Application.ts'],
-    target: 'node22',
+    target: 'node26',
+    format: 'cjs',
     treeShaking: true,
     color: true,
     platform: 'node',

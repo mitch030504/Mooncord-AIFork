@@ -11,7 +11,7 @@ import {MessageFlagsBitField, StringSelectMenuInteraction} from "discord.js";
 import {TemplateHelper} from "../../../../helper/TemplateHelper";
 
 export default class BaseSelection {
-    selectionId: string
+    selectionId!: string
     ephemeral = false
     protected localeHelper = new LocaleHelper()
     protected locale = this.localeHelper.getLocale()

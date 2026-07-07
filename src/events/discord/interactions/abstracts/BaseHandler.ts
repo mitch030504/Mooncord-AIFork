@@ -27,7 +27,7 @@ export default class BaseHandler {
     protected moonrakerClient = getMoonrakerClient()
 
     // execute order 66
-    public async executeHandler(message: Message, user: User, data, interaction = null) {
+    public async executeHandler(message: Message, user: User, data: any, interaction: any = null) {
         if (!(await this.isValid(message, user, data, interaction))) {
             return
         }
@@ -35,12 +35,12 @@ export default class BaseHandler {
         await this.handleHandler(message, user, data, interaction)
     }
 
-    async isValid(message: Message, user: User, data, interaction = null) {
+    async isValid(message: Message, user: User, data: any, interaction: any = null) {
         return false
     }
 
     // yes we handle the Handler. big surprise what?
-    async handleHandler(message: Message, user: User, data, interaction = null) {
+    async handleHandler(message: Message, user: User, data: any, interaction: any = null) {
 
     }
 }

@@ -1,6 +1,6 @@
 'use strict'
 
-import {Client, Message} from "discord.js";
+import {Client, Message, Events} from "discord.js";
 import {LocaleHelper} from "../../helper/LocaleHelper";
 import {logWarn} from "../../helper/LoggerHelper";
 import {PermissionHelper} from "../../helper/PermissionHelper";
@@ -11,7 +11,7 @@ import {getEntry} from "../../utils/CacheUtil";
 
 export class GCodeUploadHandler {
     public constructor(discordClient: Client) {
-        discordClient.on("messageCreate", async message => {
+        discordClient.on(Events.MessageCreate, async message => {
             if (message.author.id === getEntry("discord_client").clientId) {
                 return
             }
@@ -37,7 +37,7 @@ export class GCodeUploadHandler {
     }
 
     private async uploadSingleFile(message: Message) {
-        const attachment = message.attachments.at(0)
+        const attachment = message.attachments.at(0) as any
         const fileName = attachment.name
 
         if (!message.channel.isSendable()) {
@@ -63,7 +63,7 @@ export class GCodeUploadHandler {
             const embedData = await embedHelper.generateEmbed('printjob_start_request', metaData)
             const embed = embedData.embed.embeds[0]
 
-            embed.setThumbnail(`attachment://${thumbnail.name}`)
+            embed.setThumbnail(`attachment://${(thumbnail as any).name}`)
 
             embedData.embed.embeds = [embed]
             embedData.embed['files'] = [thumbnail]
@@ -73,7 +73,7 @@ export class GCodeUploadHandler {
         }
 
         await message.reply(locale.messages.errors.upload_failed
-            .replace(/(\${filename})/g, attachment.name)
+            .replace(/(\${filename})/g, attachment?.name || '')
             .replace(/(\${username})/g, message.author.tag))
     }
 

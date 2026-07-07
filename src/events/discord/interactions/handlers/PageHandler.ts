@@ -6,7 +6,7 @@ import {logNotice} from "../../../../helper/LoggerHelper";
 import BaseHandler from "../abstracts/BaseHandler";
 
 export class PageHandler extends BaseHandler {
-    async isValid(message: Message, user: User, data, interaction = null) {
+    async isValid(message: Message, user: User, data: any, interaction: any = null) {
         if (!data.functions.includes("page_up") &&
             !data.functions.includes("page_down")) {
             return false
@@ -19,7 +19,7 @@ export class PageHandler extends BaseHandler {
         return true
     }
 
-    async handleHandler(message: Message, user: User, data, interaction = null) {
+    async handleHandler(message: Message, user: User, data: any, interaction: any = null) {
         if (interaction !== null &&
             !interaction.replied &&
             !interaction.deferred) {
@@ -27,7 +27,7 @@ export class PageHandler extends BaseHandler {
         }
 
         const embed = message.embeds[0]
-        let embedData = this.embedHelper.getRawEmbedByTitle(embed.title)
+        let embedData = this.embedHelper.getRawEmbedByTitle(embed?.title as string)
 
         if (typeof embedData === 'undefined') {
             return
@@ -42,8 +42,8 @@ export class PageHandler extends BaseHandler {
             }
         }
 
-        const pages = embed.footer.text.replace(filterFooter, '').split('/')
-        const currentPage = Number.parseInt(pages[0])
+        const pages = embed?.footer?.text.replace(filterFooter, '').split('/')
+        const currentPage = Number.parseInt((pages as any)[0])
         const pageHelper = new PageHelper(embedData.embedID)
 
         const pageData = await pageHelper.getPage(data.functions.includes("page_up"), currentPage)
@@ -61,7 +61,7 @@ export class PageHandler extends BaseHandler {
 
         logNotice(`select Page ${pageData.pages} for ${embedData.embedID}`)
 
-        await message.edit({components: null})
+        await message.edit({components: undefined})
         await message.removeAttachments()
 
         await message.edit(pageData.embed)

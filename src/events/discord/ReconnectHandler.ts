@@ -1,6 +1,6 @@
 'use strict'
 
-import {Client} from "discord.js";
+import {Client, Events} from "discord.js";
 import * as App from "../../Application"
 import {logWarn} from "../../helper/LoggerHelper";
 

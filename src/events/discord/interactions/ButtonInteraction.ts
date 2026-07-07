@@ -28,13 +28,17 @@ import {ClearAttachmentsHandler} from "./handlers/ClearAttachmentsHandler";
 import {WaitMessageHandler} from "./handlers/WaitMessageHandler";
 import {UpdateRestHandler} from "./handlers/UpdateRestHandler";
 
+const HANDLER_CLASSES = [
+    WaitMessageHandler, ClearAttachmentsHandler, MacroHandler, DeleteHandler,
+    CameraSettingHandler, WebsocketHandler, UpdateRestHandler, ExcludeConfirmHandler,
+    ModalHandler, PrintJobStartHandler, EmbedHandler, MessageHandler, ReconnectHandler,
+    RefreshHandler, ListHandler, DownloadHandler, PageHandler, DeleteMessageHandler,
+    SetupHandler, NotificationHandler
+];
+
 export class ButtonInteraction {
 
-    public constructor(interaction: Interaction) {
-        void this.executeHandler(interaction)
-    }
-
-    private async executeHandler(interaction: Interaction) {
+    public async execute(interaction: Interaction) {
         if (!interaction.isButton()) {
             return
         }
@@ -81,26 +85,9 @@ export class ButtonInteraction {
 
         const message = interaction.message as Message
 
-        await new WaitMessageHandler().executeHandler(message, interaction.user, buttonData, interaction)
-        await new ClearAttachmentsHandler().executeHandler(message, interaction.user, buttonData, interaction)
-        await new MacroHandler().executeHandler(message, interaction.user, buttonData, interaction)
-        await new DeleteHandler().executeHandler(message, interaction.user, buttonData, interaction)
-        await new CameraSettingHandler().executeHandler(message, interaction.user, buttonData, interaction)
-        await new WebsocketHandler().executeHandler(message, interaction.user, buttonData, interaction)
-        await new UpdateRestHandler().executeHandler(message, interaction.user, buttonData, interaction)
-        await new ExcludeConfirmHandler().executeHandler(message, interaction.user, buttonData, interaction)
-        await new ModalHandler().executeHandler(message, interaction.user, buttonData, interaction)
-        await new PrintJobStartHandler().executeHandler(message, interaction.user, buttonData, interaction)
-        await new EmbedHandler().executeHandler(message, interaction.user, buttonData, interaction)
-        await new MessageHandler().executeHandler(message, interaction.user, buttonData, interaction)
-        await new ReconnectHandler().executeHandler(message, interaction.user, buttonData, interaction)
-        await new RefreshHandler().executeHandler(message, interaction.user, buttonData, interaction)
-        await new ListHandler().executeHandler(message, interaction.user, buttonData, interaction)
-        await new DownloadHandler().executeHandler(message, interaction.user, buttonData, interaction)
-        await new PageHandler().executeHandler(message, interaction.user, buttonData, interaction)
-        await new DeleteMessageHandler().executeHandler(message, interaction.user, buttonData, interaction)
-        await new SetupHandler().executeHandler(message, interaction.user, buttonData, interaction)
-        await new NotificationHandler().executeHandler(message, interaction.user, buttonData, interaction)
+        await Promise.allSettled(HANDLER_CLASSES.map(Handler => 
+            new Handler().executeHandler(message, interaction.user, buttonData, interaction)
+        ))
 
         await sleep(2000)
 

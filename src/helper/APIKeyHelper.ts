@@ -1,7 +1,6 @@
 'use strict'
 
 import axios from 'axios'
-import * as StackTrace from 'stacktrace-js'
 import {ConfigHelper} from './ConfigHelper'
 import {logEmpty, logError, logRegular} from "./LoggerHelper"
 
@@ -30,7 +29,7 @@ export class APIKeyHelper {
             return response.data['result']
         } catch (error) {
             const reason = error as string
-            const trace = await StackTrace.get()
+            const trace = new Error().stack
             logEmpty()
             logError('Token Error:')
             logError(`Url: ${url}/access/oneshot_token`)

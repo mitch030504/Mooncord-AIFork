@@ -5,7 +5,7 @@ export class FileInfoCommand extends BaseCommand {
     commandId = 'fileinfo'
 
     async handleCommand(interaction: ChatInputCommandInteraction) {
-        let filename = interaction.options.getString(this.syntaxLocale.commands.fileinfo.options.file.name)
+        let filename = interaction.options.getString(this.syntaxLocale.commands.fileinfo.options.file.name)!
 
         if (!filename.endsWith('.gcode')) {
             filename = `${filename}.gcode`
@@ -25,7 +25,7 @@ export class FileInfoCommand extends BaseCommand {
         const embedData = await this.embedHelper.generateEmbed('fileinfo', metadata)
         const embed = embedData.embed.embeds[0] as EmbedBuilder
 
-        embed.setThumbnail(`attachment://${thumbnail.name}`)
+        embed.setThumbnail(`attachment://${(thumbnail as any).name}`)
 
         embedData.embed.embeds = [embed]
         embedData.embed['files'] = [thumbnail]

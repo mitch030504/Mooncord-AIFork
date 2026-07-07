@@ -8,7 +8,7 @@ import {StatusHelper} from "../../../helper/StatusHelper";
 
 export class ConsoleMessage {
 
-    public async parse(message) {
+    public async parse(message: any) {
         if (typeof (message.method) === 'undefined') {
             return false
         }

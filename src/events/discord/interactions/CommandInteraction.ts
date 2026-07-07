@@ -33,20 +33,44 @@ import PowerDeviceCommand from "./commands/PowerDeviceCommand";
 import HistoryCommand from "./commands/HistoryCommand";
 import TimelapseListCommand from "./commands/TimelapseListCommand";
 
+const COMMAND_CLASSES: Record<string, any> = {
+    admin: AdminCommand,
+    fileinfo: FileInfoCommand,
+    info: InfoCommand,
+    dump: DumpCommand,
+    temp: TempCommand,
+    restart: RestartCommand,
+    listlogs: ListLogsCommand,
+    userid: UserIdCommand,
+    reset_database: ResetDatabaseCommand,
+    notify: NotifyCommand,
+    emergency_stop: EmergencyStopCommand,
+    status: StatusCommand,
+    editchannel: EditChannelCommand,
+    gcodelist: GcodeListCommand,
+    printjob: PrintjobCommand,
+    systeminfo: SystemInfoCommand,
+    preheat: PreheatCommand,
+    pidtune: PidtuneCommand,
+    saveconfig: SaveConfigCommand,
+    tune: TuneCommand,
+    config: ConfigCommand,
+    execute: ExecuteCommand,
+    power: PowerDeviceCommand,
+    history: HistoryCommand,
+    timelapselist: TimelapseListCommand
+};
+
 export class CommandInteraction {
 
-    public constructor(interaction: Interaction) {
-        void this.execute(interaction)
-    }
-
-    private async execute(interaction: Interaction) {
+    public async execute(interaction: Interaction) {
         if (!interaction.isChatInputCommand()) {
             return
         }
 
         let logFeedback = interaction.commandName
 
-        for (const option of interaction.options['_hoistedOptions']) {
+        for (const option of (interaction.options as any)['_hoistedOptions']) {
             logFeedback = `${logFeedback} ${option.name}:${option.value}`
         }
 
@@ -58,7 +82,7 @@ export class CommandInteraction {
 
         let permissionId = commandId
 
-        if (commandGenerator.isCustomCommand(commandId)) {
+        if (commandGenerator.isCustomCommand(commandId as string)) {
             permissionId = 'custom_command'
         }
 
@@ -68,38 +92,17 @@ export class CommandInteraction {
 
         logNotice(`${interaction.user.tag} executed command: ${logFeedback}`)
 
-        if (!permissionHelper.hasPermission(interaction.user, interaction.guild, permissionId)) {
+        if (!permissionHelper.hasPermission(interaction.user, interaction.guild, permissionId as string)) {
             await permissionHelper.sendNoPermissionMessage(interaction)
             logWarn(`${interaction.user.tag} doesnt have the permission for: ${interaction.commandName} (${commandId})`)
             return;
         }
 
-        void new AdminCommand().executeCommand(interaction, commandId)
-        void new FileInfoCommand().executeCommand(interaction, commandId)
-        void new InfoCommand().executeCommand(interaction, commandId)
-        void new DumpCommand().executeCommand(interaction, commandId)
-        void new TempCommand().executeCommand(interaction, commandId)
-        void new RestartCommand().executeCommand(interaction, commandId)
-        void new ListLogsCommand().executeCommand(interaction, commandId)
-        void new UserIdCommand().executeCommand(interaction, commandId)
-        void new ResetDatabaseCommand().executeCommand(interaction, commandId)
-        void new NotifyCommand().executeCommand(interaction, commandId)
-        void new EmergencyStopCommand().executeCommand(interaction, commandId)
-        void new StatusCommand().executeCommand(interaction, commandId)
-        void new EditChannelCommand().executeCommand(interaction, commandId)
-        void new GcodeListCommand().executeCommand(interaction, commandId)
-        void new PrintjobCommand().executeCommand(interaction, commandId)
-        void new SystemInfoCommand().executeCommand(interaction, commandId)
-        void new PreheatCommand().executeCommand(interaction, commandId)
-        void new PidtuneCommand().executeCommand(interaction, commandId)
-        void new SaveConfigCommand().executeCommand(interaction, commandId)
-        void new TuneCommand().executeCommand(interaction, commandId)
-        void new ConfigCommand().executeCommand(interaction, commandId)
-        void new ExecuteCommand().executeCommand(interaction, commandId)
-        void new CustomCommand().executeCommand(interaction, commandId)
-        void new PowerDeviceCommand().executeCommand(interaction, commandId)
-        void new HistoryCommand().executeCommand(interaction, commandId)
-        void new TimelapseListCommand().executeCommand(interaction, commandId)
+        if (commandGenerator.isCustomCommand(commandId as string)) {
+            await new CustomCommand().executeCommand(interaction, commandId as string)
+        } else if (COMMAND_CLASSES[commandId as string]) {
+            await new COMMAND_CLASSES[commandId as string]().executeCommand(interaction, commandId as string)
+        }
 
         await sleep(1_000)
 

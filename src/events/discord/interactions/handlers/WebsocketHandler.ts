@@ -7,14 +7,14 @@ import BaseHandler from "../abstracts/BaseHandler";
 import {getEntry, setData, updateData} from "../../../../utils/CacheUtil";
 
 export class WebsocketHandler extends BaseHandler {
-    async isValid(message: Message, user: User, data, interaction = null) {
+    async isValid(message: Message, user: User, data: any, interaction: any = null) {
         if (!data.websocket_requests) {
             return false
         }
         return true
     }
 
-    async handleHandler(message: Message, user: User, data, interaction = null) {
+    async handleHandler(message: Message, user: User, data: any, interaction: any = null) {
         if (interaction !== null && !interaction.deferred && !interaction.replied) {
             await interaction.deferReply()
         }

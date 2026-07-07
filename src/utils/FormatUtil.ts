@@ -1,11 +1,11 @@
 import {ConfigHelper} from "../helper/ConfigHelper";
 
-export function formatTimestamp(seconds) {
+export function formatTimestamp(seconds: number) {
     if (isNaN(Number(seconds)) || !isFinite(seconds)) {
         return 'N/A'
     }
 
-    seconds = seconds.toFixed(0)
+    seconds = seconds.toFixed(0) as unknown as number
 
     const currentDate = new Date()
 
@@ -19,7 +19,7 @@ export function formatTimestamp(seconds) {
     return `<t:${seconds}:t>`
 }
 
-export function formatTime(seconds) {
+export function formatTime(seconds: number) {
     if (isNaN(Number(seconds)) || !isFinite(seconds)) {
         seconds = 0
     }
@@ -41,7 +41,7 @@ export function formatTime(seconds) {
     return (isNeg) ? `-${r}` : r
 }
 
-export function formatDate(seconds) {
+export function formatDate(seconds: number) {
     if (isNaN(Number(seconds)) || !isFinite(seconds)) {
         return 'N/A'
     }
@@ -67,11 +67,11 @@ export function stripAnsi(input: string) {
         '')
 }
 
-export function formatPercent(percent, digits) {
+export function formatPercent(percent: number, digits: number) {
     return (percent * 100).toFixed(digits)
 }
 
-export function formatReduce(value, factor, digits) {
+export function formatReduce(value: number, factor: number, digits: number) {
     return (value / factor).toFixed(digits)
 }
 
@@ -88,4 +88,8 @@ export function limitString(input: string, length: number) {
         return input
     }
     return input.slice(0, length)
+}
+
+export function escapeRegExp(input: string): string {
+    return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }

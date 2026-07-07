@@ -5,11 +5,11 @@ import {getEntry} from "../../../../utils/CacheUtil";
 import BaseHandler from "../abstracts/BaseHandler";
 
 export class RefreshHandler extends BaseHandler {
-    async isValid(message: Message, user: User, data, interaction = null) {
+    async isValid(message: Message, user: User, data: any, interaction: any = null) {
         return data.functions.includes('refresh_status');
     }
 
-    async handleHandler(message: Message, user: User, data, interaction = null) {
+    async handleHandler(message: Message, user: User, data: any, interaction: any = null) {
         const functionCache = getEntry('function')
 
         const waitMessage = this.locale.messages.answers.status_update
@@ -19,14 +19,14 @@ export class RefreshHandler extends BaseHandler {
             if (interaction.replied) {
                 await interaction.followUp({flags: MessageFlagsBitField.Flags.Ephemeral, content: waitMessage})
             } else {
-                await interaction.update({components: null, content: waitMessage})
+                await interaction.update({components: undefined, content: waitMessage})
             }
         }
 
         const currentStatus = functionCache.current_status
         const currentStatusMeta = this.config.getStatusMeta()[currentStatus]
 
-        await message.edit({components: null})
+        await message.edit({components: undefined})
 
         const newMessage = await this.embedHelper.generateEmbed(currentStatusMeta.embed_id)
 

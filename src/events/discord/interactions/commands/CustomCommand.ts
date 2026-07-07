@@ -20,7 +20,7 @@ export default class CustomCommand extends BaseCommand {
 
         if (customCommandData.macros !== undefined) {
             await this.consoleHelper.executeGcodeCommands(customCommandData.macros,
-                interaction.channel)
+                interaction.channel as any)
         }
 
         if (customCommandData.websocket_commands !== undefined) {

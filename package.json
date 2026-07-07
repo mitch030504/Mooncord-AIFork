@@ -1,63 +1,58 @@
 {
-  "name": "mooncord",
-  "version": "1.3.1",
-  "description": "Moonraker Discord Bot based on Discord.js",
-  "main": "index.js",
+  "name": "Mooncord-AIFork",
+  "version": "1.3.1-fork",
+  "description": "Modernized Fork of Mooncord - A Moonraker Discord Bot",
+  "main": "dist/index.js",
   "scripts": {
-    "migrateJson": "node src/migration/ConfigMigration.js",
-    "start": "node --max-old-space-size=92 --expose-gc --gc-global dist/index.js",
-    "debugstart": "node --inspect=0.0.0.0:3000 --max-old-space-size=92 --trace_gc --expose-gc --trace-deprecation --trace-warnings --trace-uncaught --track-heap-objects --gc-global dist/index.js",
-    "checkcodestyle": "npx eslint ./**",
-    "autofixcodestyle": "npx eslint ./** --fix",
+    "migrateJson": "tsx src/migration/ConfigMigration.ts",
+    "start": "node dist/index.js",
+    "debugstart": "node --inspect=0.0.0.0:3000 --trace-deprecation --trace-warnings --trace-uncaught dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "checkcodestyle": "eslint .",
+    "autofixcodestyle": "eslint . --fix",
     "ncu": "ncu",
-    "generatelocale": "node src/helper/LocaleGenerationHelper.js",
+    "generatelocale": "tsx src/helper/LocaleGenerationHelper.ts",
     "build": "node build.mjs",
     "build:dev": "node build.mjs dev"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/eliteSchwein/mooncord.git"
+    "url": "git+https://github.com/<your-username>/mooncord.git"
   },
   "keywords": [],
-  "author": "eliteSCHW31N",
+  "author": "eliteSCHW31N (Forked)",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/eliteSchwein/mooncord/issues"
+    "url": "https://github.com/<your-username>/mooncord/issues"
   },
-  "homepage": "https://github.com/eliteSchwein/mooncord#readme",
+  "homepage": "https://github.com/<your-username>/mooncord#readme",
+  "engines": {
+    "node": ">=26.0.0"
+  },
   "devDependencies": {
     "@discordjs/rest": "^2.6.1",
+    "@eslint/js": "^10.0.0",
     "@types/fluent-ffmpeg": "^2.1.28",
-    "@types/gm": "^1.25.4",
-    "@types/node": "^25.9.3",
-    "@types/readline-sync": "^1.4.8",
+    "@types/node": "^26.0.0",
     "async-wait-until": "2.0.31",
-    "axios": "^1.18.0",
+    "axios": "^1.18.1",
     "bytes": "^3.1.2",
     "colorts": "^0.1.63",
     "esbuild": "^0.28.1",
-    "eslint": "^10.5.0",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^7.3.0",
+    "eslint": "^10.6.0",
     "fluent-ffmpeg": "^2.1.3",
-    "form-data": "^4.0.6",
-    "gm": "^1.25.1",
-    "jimp": "^1.6.1",
+    "globals": "^17.7.0",
     "js-conf-parser": "^1.0.3",
-    "lodash": "^4.18.1",
-    "node-fetch": "^3.3.2",
     "npm-check-updates": "^22.2.3",
-    "readline-sync": "^1.4.10",
     "regex-parser": "^2.3.1",
-    "stacktrace-js": "^2.0.2",
-    "typescript": "^6.0.3",
-    "websocket-ts": "^2.3.0",
-    "ws": "^8.21.0"
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.3",
+    "websocket-ts": "^2.3.0"
   },
   "dependencies": {
     "@resvg/resvg-js": "^2.6.2",
     "discord.js": "^14.26.4",
-    "sharp": "^0.35.1"
+    "sharp": "^0.35.3"
   },
   "allowScripts": {
     "esbuild@0.28.1": true

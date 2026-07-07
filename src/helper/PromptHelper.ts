@@ -13,7 +13,7 @@ export class PromptHelper {
         setData('prompt', {
             timeout: 0,
             group_active: false,
-            components: []
+            components: [] as any[]
         })
     }
 
@@ -32,7 +32,7 @@ export class PromptHelper {
         }
 
         await consoleHelper.executeGcodeCommands([gcode],
-            interaction.channel,
+            interaction.channel as any,
             true)
 
         if (!interaction.replied) {
@@ -91,7 +91,7 @@ export class PromptHelper {
                 cache.group_active = true
                 cache.components.push({
                     type: 'button_group',
-                    components: []
+                    components: [] as any[]
                 })
                 break
             case 'button_group_end':
@@ -126,7 +126,7 @@ export class PromptHelper {
 
     private showPrompt(content: any) {
         const embed = new EmbedBuilder()
-        const message = {embeds: [], components: []}
+        const message: any = {embeds: [], components: []}
         let currentRow = new ActionRowBuilder()
 
         for (const component of content.components) {

@@ -5,13 +5,12 @@ import * as path from "path";
 import {logSuccess} from "../helper/LoggerHelper";
 import * as util from "util";
 import {mergeDeep} from "../helper/DataHelper";
-import {get} from 'lodash'
 import {LocaleHelper} from "../helper/LocaleHelper";
 import {ConfigHelper} from "../helper/ConfigHelper";
 import {MCUHelper} from "../helper/MCUHelper";
 import {HistoryHelper} from "../helper/HistoryHelper";
 
-const cacheData: any = {
+const cacheData: Record<string, any> = {
     websocket: {
         blocked: []
     },
@@ -87,13 +86,18 @@ export function getEntry(key: string) {
 }
 
 export function findValue(key: string) {
-    return get(cacheData, key)
+    return getByPath(cacheData, key)
+}
+
+function getByPath(obj: any, path: string): any {
+    if (obj === null || obj === undefined) return undefined
+    return path.split('.').reduce<any>((acc, key) => (acc === undefined || acc === null ? undefined : acc[key]), obj)
 }
 
 export function getHeaterArguments() {
     const locale = new LocaleHelper().getLocale()
     const heaters = cacheData.state.heaters.available_heaters
-    const options = {}
+    const options: Record<string, any> = {}
     let {heater} = locale.commands.preheat.options.manual.options
 
     if (typeof heater === 'undefined') {
@@ -233,7 +237,7 @@ export function getLogPath() {
 }
 
 export async function dump() {
-    void await writeDump()
+    await writeDump()
     return cacheData
 }
 
@@ -257,9 +261,6 @@ export function purgeOldCacheEntries() {
         delete cacheData[toPurgeEntry]
         hasDeleted = true
     }
-
-    if (global.gc && hasDeleted)
-        global.gc()
 }
 
 export function getNewExpireAtDate(offset: number = 60) {
@@ -270,7 +271,7 @@ export function getNewExpireAtDate(offset: number = 60) {
 export async function fetchCaches(data: any = {}, overwriteData = false) {
     if(!data.fetch) return data
 
-    const fetchedData = {}
+    const fetchedData: Record<string, any> = {}
 
     for(const toFetch of data.fetch) {
         switch(toFetch) {

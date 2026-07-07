@@ -11,7 +11,7 @@ import {MetadataHelper} from "../../../../helper/MetadataHelper";
 import {TemplateHelper} from "../../../../helper/TemplateHelper";
 
 export default class BaseCommand {
-    commandId: string
+    commandId!: string
     ephemeral = false
     defer = true
     protected localeHelper = new LocaleHelper()

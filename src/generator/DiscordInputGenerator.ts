@@ -18,7 +18,7 @@ export class DiscordInputGenerator {
         this.generateCacheForSection('inputs');
     }
 
-    public generateButtons(buttons, buttonsPerRow = 0) {
+    public generateButtons(buttons: any, buttonsPerRow = 0) {
         const rows = []
         let limit = 4
         let currentButton = 0
@@ -38,7 +38,7 @@ export class DiscordInputGenerator {
 
         for (const buttonData of buttons) {
             if (buttonData.required_cache !== undefined) {
-                if (buttonData.required_cache.map(findValue).map(v => !v).find(v => v)) {
+                if (buttonData.required_cache.map(findValue).map((v: any) => !v).find((v: any) => v)) {
                     continue
                 }
             }
@@ -72,22 +72,22 @@ export class DiscordInputGenerator {
                     rows.push(new ActionRowBuilder())
                 }
 
-                rows[1].addComponents(button)
+                (rows[1] as any).addComponents(button)
             } else {
-                rows[0].addComponents(button)
+                (rows[0] as any).addComponents(button)
             }
 
             currentButton++
         }
 
-        if (rows[0].components.length === 0) {
+        if ((rows[0] as any).components.length === 0) {
             return
         }
 
         return rows
     }
 
-    public generateSelections(selections) {
+    public generateSelections(selections: any) {
         const rows = []
 
         if (typeof selections === 'undefined') {
@@ -103,7 +103,7 @@ export class DiscordInputGenerator {
             const row = new ActionRowBuilder()
 
             if (selectionData.required_cache !== undefined) {
-                if (selectionData.required_cache.map(findValue).map(v => !v).find(v => v)) {
+                if (selectionData.required_cache.map(findValue).map((v: any) => !v).find((v: any) => v)) {
                     continue
                 }
             }
@@ -159,7 +159,7 @@ export class DiscordInputGenerator {
         return rows
     }
 
-    public generateInputs(inputs) {
+    public generateInputs(inputs: any) {
         const componentRows = []
 
         if (typeof (inputs) === 'undefined') {
@@ -198,7 +198,7 @@ export class DiscordInputGenerator {
             sectionConfig = localeHelper.getSyntaxLocale()[section]
         }
 
-        const meta = inputMeta[section]
+        const meta = (inputMeta as any)[section]
 
         if (section === 'buttons') {
             for (const key in meta) {

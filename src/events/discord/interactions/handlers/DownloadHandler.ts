@@ -3,7 +3,7 @@ import BaseHandler from "../abstracts/BaseHandler";
 import {downloadFile} from "../../../../utils/FileUtil";
 
 export default class DownloadHandler extends BaseHandler {
-    async isValid(message: Message, user: User, data, interaction = null) {
+    async isValid(message: Message, user: User, data: any, interaction: any = null) {
         if (!data.functions.includes("download")) {
             return false
         }
@@ -16,7 +16,7 @@ export default class DownloadHandler extends BaseHandler {
         return true
     }
 
-    async handleHandler(message: Message, user: User, data, interaction = null) {
+    async handleHandler(message: Message, user: User, data: any, interaction: any = null) {
         if (interaction !== null && !interaction.replied && !interaction.deferred) {
             await interaction.deferReply({flags: MessageFlagsBitField.Flags.Ephemeral})
         }

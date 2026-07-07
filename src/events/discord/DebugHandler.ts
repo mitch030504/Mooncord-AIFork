@@ -1,6 +1,6 @@
 'use strict'
 
-import {Client} from "discord.js";
+import {Client, Events} from "discord.js";
 import {updateData} from "../../utils/CacheUtil";
 import {getDiscordClient} from "../../Application";
 
@@ -9,7 +9,7 @@ export class DebugHandler {
         discordClient.on("debug", info => {
             if (info.includes('Heartbeat acknowledged, latency of')) {
                 updateData('discord_client', {
-                    'event_count': getDiscordClient().getClient()['_eventsCount']
+                    'event_count': (getDiscordClient().getClient() as any)['_eventsCount']
                 })
             }
         })

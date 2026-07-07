@@ -7,7 +7,7 @@ import {VersionHelper} from "../../../helper/VersionHelper";
 import {logRegular} from "../../../helper/LoggerHelper";
 
 export class UpdateNotification {
-    public async parse(message) {
+    public async parse(message: any) {
         if (typeof (message.method) === 'undefined') {
             return false
         }

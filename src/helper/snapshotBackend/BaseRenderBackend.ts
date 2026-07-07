@@ -3,7 +3,7 @@ import {ConfigHelper} from "../ConfigHelper";
 export default class BaseRenderBackend {
     protected buffer: Buffer
     protected pictureConfig: any
-    protected config: ConfigHelper
+    protected config!: ConfigHelper
 
     public constructor(
         buffer: Buffer,

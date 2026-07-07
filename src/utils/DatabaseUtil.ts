@@ -1,7 +1,7 @@
 'use strict'
 
 import {ConfigHelper} from '../helper/ConfigHelper'
-import {logEmpty, logError, logRegular, logSuccess, logWarn} from '../helper/LoggerHelper'
+import {gracefulShutdown, logEmpty, logError, logRegular, logSuccess, logWarn} from '../helper/LoggerHelper'
 import {getMoonrakerClient} from "../Application";
 import path from "path";
 import {writeFile} from "fs/promises";
@@ -22,7 +22,8 @@ const defaultDatabase = {
     'invite_url': ''
 }
 
-let database: any = {}
+let database: Record<string, any> = {}
+let databaseReady = false
 
 export class DatabaseUtil {
     protected config = new ConfigHelper()
@@ -61,7 +62,7 @@ export class DatabaseUtil {
         try {
             if(!await this.hasDatabase()) {
                 logError(`the database for mooncord was not found!`)
-                process.exit(5)
+                gracefulShutdown(1, "database failure")
                 return
             }
 
@@ -81,6 +82,7 @@ export class DatabaseUtil {
                 database.permissions.admins = JSON.parse(JSON.stringify(defaultDatabase.permissions.admins))
             }
 
+            databaseReady = true
             this.currentRetry = 0
         } catch (error) {
             this.currentRetry += 1
@@ -88,7 +90,7 @@ export class DatabaseUtil {
             if(this.currentRetry > this.retryLimit) {
                 logError(`Couldn't retrieve data from database, stopping MoonCord now!`)
                 logError(JSON.stringify(error, Object.getOwnPropertyNames(error)))
-                process.exit(5)
+                gracefulShutdown(1, "database failure")
             }
 
             logWarn(`Couldn't retrieve data from database, retry ${this.currentRetry} of ${this.retryLimit} in 5 seconds. Reason: ${util.format(error)}`)
@@ -110,12 +112,12 @@ export class DatabaseUtil {
     public async updateDatabase() {
         if(Object.keys(database).length === 0) {
             logError(`couldnt update database, because the database in the ram is empty!`)
-            process.exit(5)
+            gracefulShutdown(1, "database failure")
             return
         }
         if(! await this.hasDatabase()) {
             logError(`couldnt update database, because the database was not found!`)
-            process.exit(5)
+            gracefulShutdown(1, "database failure")
             return
         }
 
@@ -146,11 +148,11 @@ export class DatabaseUtil {
     }
 
     public isReady() {
-        return typeof database !== 'undefined'
+        return databaseReady
     }
 
     public async dump() {
-        void await this.writeDump()
+        await this.writeDump()
         return database
     }
 

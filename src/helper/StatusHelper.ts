@@ -17,11 +17,11 @@ export class StatusHelper {
     protected localeHelper = new LocaleHelper()
     protected statusMeta = this.configHelper.getStatusMeta()
     protected bypassChecks = false
-    protected discordClient: DiscordClient
+    protected discordClient: DiscordClient | null = null
     protected notificationHelper = new NotificationHelper()
 
-    public async update(status: string = null, bypassChecks: boolean = false, discordClient: DiscordClient = null) {
-        if (typeof discordClient === null)
+    public async update(status: string | null = null, bypassChecks: boolean = false, discordClient: DiscordClient | null = null) {
+        if (discordClient === null)
             discordClient = app.getDiscordClient()
 
         this.bypassChecks = bypassChecks
@@ -34,7 +34,7 @@ export class StatusHelper {
         let progress = stateCache.display_status.progress.toFixed(2)
         if(isNaN(progress)) progress = 0
 
-        const overrideValues = {}
+        const overrideValues: Record<string, any> = {}
 
         if (typeof serverInfo === 'undefined')
             return
@@ -62,7 +62,7 @@ export class StatusHelper {
         if (status === 'pause' && functionCache.ignore_pause)
             return
 
-        if (typeof status === 'undefined')
+        if (typeof status === 'undefined' || status === null)
             return
 
         const currentStatus = functionCache.current_status
@@ -133,7 +133,7 @@ export class StatusHelper {
             overrideValues['thumbnail'] = 'none'
         }
 
-        const statusEmbed = await this.embedHelper.generateEmbed(statusMeta.embed_id, null, null, overrideValues)
+        const statusEmbed = await this.embedHelper.generateEmbed(statusMeta.embed_id, undefined, undefined, overrideValues)
 
         if (this.discordClient === null)
             this.discordClient = app.getDiscordClient()
@@ -155,7 +155,7 @@ export class StatusHelper {
         })
 
         if (typeof statusMeta.activity !== 'undefined') {
-            this.discordClient.getClient().user.setPresence({
+            this.discordClient?.getClient()?.user?.setPresence({
                 status: statusMeta.activity_status,
                 activities: [{
                     name: statusEmbed.activity,

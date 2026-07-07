@@ -6,11 +6,11 @@ import * as metaData from "../meta/history_graph_meta.json";
 import {MetadataHelper} from "./MetadataHelper";
 import {parseData} from "../utils/InputUtil";
 import {formatDate, formatPercent, formatReduce, formatTime, formatTimestamp, limitToMax} from "../utils/FormatUtil";
-import {get} from "lodash";
+import {getValueByPath} from "../utils/ObjectValueUtil";
 import {ImageHelper} from "./ImageHelper";
 import {TimelapseHelper} from "./TimelapseHelper";
 
-export function isObject(item) {
+export function isObject(item: any) {
     return (item && typeof item === 'object' && !Array.isArray(item));
 }
 
@@ -21,7 +21,7 @@ export function removeFromArray(array: any[], value: string | number | object) {
     }
 }
 
-export function mergeDeep(target, ...sources) {
+export function mergeDeep(target: any, ...sources: any[]) {
     if (!sources.length) return target;
     const source = sources.shift();
 
@@ -39,11 +39,11 @@ export function mergeDeep(target, ...sources) {
     return mergeDeep(target, ...sources);
 }
 
-export async function sleep(delay) {
+export async function sleep(delay: any) {
     return await new Promise((r) => setTimeout(r, delay))
 }
 
-export function findValueByPartial(data, partial: string, key: string) {
+export function findValueByPartial(data: any, partial: string, key: string) {
     for (const dataFragment of data) {
         if (dataFragment[key].includes(partial)) {
             return dataFragment[key]
@@ -51,7 +51,7 @@ export function findValueByPartial(data, partial: string, key: string) {
     }
 }
 
-export function parsePageData(rawData: string, data) {
+export function parsePageData(rawData: string, data: any) {
     return rawData.replace(/(\${data).*?(})/g, (match) => {
         const dataProperty = match
             .replace(/(\${data.)/g, '')
@@ -64,7 +64,7 @@ export function parsePageData(rawData: string, data) {
     })
 }
 
-export async function parseFunctionPlaceholders(fragments) {
+export async function parseFunctionPlaceholders(fragments: any) {
     const metadataHelper = new MetadataHelper()
 
     switch (fragments[0]) {
@@ -102,9 +102,9 @@ export async function parseFunctionPlaceholders(fragments) {
 
             if (fragments[2] === "timelapse") {
                 const timelapseHelper = new TimelapseHelper()
-                thumbnailBuffer = await timelapseHelper.getThumbnail(fragments[1])
+                thumbnailBuffer = await timelapseHelper.getThumbnail(fragments[1]) as any
             } else {
-                thumbnailBuffer = await metadataHelper.getThumbnail(fragments[1], true, fragments[2] === 'small') as Buffer
+                thumbnailBuffer = await metadataHelper.getThumbnail(fragments[1], true, fragments[2] === 'small') as any
             }
 
             let mimeType = "image/png";
@@ -131,7 +131,7 @@ export async function parseFunctionPlaceholders(fragments) {
 
             if(!metaData) return undefined
 
-            let value = get(metaData, metadataKey)
+            let value = getValueByPath(metaData, metadataKey)
 
             if(!value) value = fragments[3]
 

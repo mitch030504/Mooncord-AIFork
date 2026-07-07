@@ -6,7 +6,8 @@ import {logRegular} from "./LoggerHelper";
 import * as App from "../Application"
 import {LocaleHelper} from "./LocaleHelper";
 import {NotificationHelper} from "./NotificationHelper";
-import * as temp_meta from "../meta/temp_meta.json"
+import temp_meta from "../meta/temp_meta.json"
+const tempMeta = temp_meta as any
 import TempHistoryGraph from "./graphs/TempHistoryGraph";
 import {formatPercent} from "../utils/FormatUtil";
 
@@ -15,14 +16,14 @@ export class TempHelper {
         const cache = getEntry('state')
         logRegular("Generate Sensor Colors...")
 
-        const colorCache = {}
-        const temperatureSensors = temp_meta.temperature_sensors
+        const colorCache: Record<string, any> = {}
+        const temperatureSensors = tempMeta.temperature_sensors
         const colors = new TempHistoryGraph().getColors()
         let colorIndex = 0
 
         for (const cacheKey in cache) {
             const cacheKeySplit = cacheKey.split(' ')
-            const keySearch = cacheKeySplit[0].replace(/\d/g, '')
+            const keySearch = (cacheKeySplit[0] ?? '').replace(/\d/g, '')
 
             if (!temperatureSensors.includes(keySearch)) {
                 continue
@@ -50,18 +51,18 @@ export class TempHelper {
             "fields": [],
             "cache_ids": []
         }
-        let supportedSensors = temp_meta.supported_sensors
+        let supportedSensors = tempMeta.supported_sensors
 
         if (minimal) {
-            supportedSensors = temp_meta.minimal_supported_sensors
+            supportedSensors = tempMeta.minimal_supported_sensors
         }
 
         for (const sensorType of supportedSensors) {
             const sensorResult = this.parseFieldsSet(sensorType, minimal)
 
             if (sensorResult.fields.length > 0) {
-                result.fields = result.fields.concat(sensorResult.fields)
-                result.cache_ids = result.cache_ids.concat(sensorResult.cache_ids)
+                result.fields = result.fields.concat(sensorResult.fields as any) as any
+                result.cache_ids = result.cache_ids.concat(sensorResult.cache_ids as any) as any
             }
         }
 
@@ -69,15 +70,15 @@ export class TempHelper {
     }
 
     public isCold(temperature: number) {
-        return temperature < temp_meta.cold_meta.hot_temp
+        return temperature < tempMeta.cold_meta.hot_temp
     }
 
     public isSlowFan(speed: number) {
-        return speed < (temp_meta.slow_fan_meta.fast_fan / 100)
+        return speed < (tempMeta.slow_fan_meta.fast_fan / 100)
     }
 
     public parseFieldsSet(key: string, hideColor = false) {
-        const allias = temp_meta.alliases[key]
+        const allias = tempMeta.alliases[key]
 
         const cacheData = this.parseCacheFields(key)
         const configHelper = new ConfigHelper()
@@ -86,7 +87,7 @@ export class TempHelper {
             key = allias
         }
 
-        const mappingData = temp_meta[key]
+        const mappingData = (temp_meta as any)[key]
         const fields = []
         const cacheIds = []
 
@@ -101,7 +102,7 @@ export class TempHelper {
             }
 
             if (typeof cacheData[cacheKey].temperature !== 'undefined' &&
-                temp_meta.temperature_sensors.includes(key) &&
+                tempMeta.temperature_sensors.includes(key) &&
                 !hideColor) {
 
                 mappingData.fields.color = {
@@ -111,17 +112,17 @@ export class TempHelper {
             }
 
             if (typeof cacheData[cacheKey].temperature !== 'undefined' &&
-                temp_meta.heater_types.includes(key)) {
+                tempMeta.heater_types.includes(key)) {
                 if (this.isCold(cacheData[cacheKey].temperature)) {
-                    icon = configHelper.getIcons(new RegExp(`${temp_meta.cold_meta.icon}`, 'g'))[0].icon
+                    icon = configHelper.getIcons(new RegExp(`${tempMeta.cold_meta.icon}`, 'g'))[0].icon
                     keyData.name = `${icon} ${this.parseFieldTitle(cacheKey)}`
                 }
             }
 
             if (typeof cacheData[cacheKey].speed !== 'undefined' &&
-                temp_meta.fan_types.includes(key)) {
+                tempMeta.fan_types.includes(key)) {
                 if (this.isSlowFan(cacheData[cacheKey].speed)) {
-                    icon = configHelper.getIcons(new RegExp(`${temp_meta.slow_fan_meta.icon}`, 'g'))[0].icon
+                    icon = configHelper.getIcons(new RegExp(`${tempMeta.slow_fan_meta.icon}`, 'g'))[0].icon
                     keyData.name = `${icon} ${this.parseFieldTitle(cacheKey)}`
                 }
             }
@@ -333,9 +334,9 @@ export class TempHelper {
     }
 
     private parseFieldTitle(key: string) {
-        const hideList = temp_meta.hide_types
+        const hideList = tempMeta.hide_types
 
-        hideList.some(hideType => key = key.replace(hideType, ''))
+        hideList.some((hideType: any) => key = key.replace(hideType, ''))
 
         if (key.startsWith(' ')) {
             key = key.substring(1)
@@ -344,13 +345,13 @@ export class TempHelper {
         return key
     }
 
-    private parseCacheFields(key) {
-        const result = {}
+    private parseCacheFields(key: any) {
+        const result: Record<string, any> = {}
         const cache = getEntry('state')
 
         for (const cacheKey in cache) {
             const cacheKeySplit = cacheKey.split(' ')
-            const keySearch = cacheKeySplit[0].replace(/\d/g, '')
+            const keySearch = (cacheKeySplit[0] ?? '').replace(/\d/g, '')
 
             if (keySearch === key) {
                 result[cacheKey] = cache[cacheKey]

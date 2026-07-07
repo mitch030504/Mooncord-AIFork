@@ -15,7 +15,7 @@ export class TempTargetModal extends BaseModal {
         let heaterList = ''
 
         for (const componentRow of componentRows) {
-            const heaterInput = componentRow.components[0]
+            const heaterInput = (componentRow as any).components[0]
             const heater = heaterInput.customId
             const heaterTarget = heaterInput.value
 

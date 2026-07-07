@@ -4,7 +4,7 @@ import {Message, User} from "discord.js";
 import BaseHandler from "../abstracts/BaseHandler";
 
 export class DeleteHandler extends BaseHandler {
-    async isValid(message: Message, user: User, data, interaction = null) {
+    async isValid(message: Message, user: User, data: any, interaction: any = null) {
         if (!data.functions.includes("delete")) {
             return false
         }
@@ -15,10 +15,10 @@ export class DeleteHandler extends BaseHandler {
         return true
     }
 
-    async handleHandler(message: Message, user: User, data, interaction = null) {
+    async handleHandler(message: Message, user: User, data: any, interaction: any = null) {
         const currentEmbed = message.embeds[0]
 
-        if (currentEmbed.author === null) {
+        if (currentEmbed?.author === null) {
             return
         }
 

@@ -13,8 +13,8 @@ export class ShowTempSelection extends BaseSelection {
         const tempHelper = new TempHelper()
 
         const heater = interaction.values[0]
-        const temps = tempHelper.parseFields().fields
-        let tempField = {}
+        const temps = (tempHelper as any).parseFields().fields as any[]
+        let tempField: any = {}
 
         for (const temp of temps) {
             if (temp.name.endsWith(heater)) {
@@ -23,7 +23,7 @@ export class ShowTempSelection extends BaseSelection {
         }
 
         const embedData = await this.embedHelper.generateEmbed('single_temperature', {heater}, [tempField])
-        const tempGraph = await new TempHistoryGraph().renderGraph(heater)
+        const tempGraph = await new TempHistoryGraph().renderGraph(heater as any)
         const embed = embedData.embed.embeds[0]
         const components = embedData.embed['components']
         let files = [tempGraph]
@@ -32,13 +32,13 @@ export class ShowTempSelection extends BaseSelection {
             files = [...files, ...embedData.embed['files']]
         }
 
-        embed.setImage(`attachment://${tempGraph.name}`)
+        embed.setImage(`attachment://${tempGraph?.name}`)
 
         const currentMessage = interaction.message as Message
-        await currentMessage.edit({components: null})
+        await currentMessage.edit({components: undefined})
         await currentMessage.removeAttachments()
 
-        await currentMessage.edit({embeds: [embed], files, components})
+        await currentMessage.edit({embeds: [embed], files: files as any, components})
 
         await interaction.deleteReply()
     }

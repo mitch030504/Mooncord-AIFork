@@ -23,7 +23,7 @@ export function convertButtonStyle(style: string) {
         case "ERROR":
             return ButtonStyle.Danger
         default:
-            return ButtonStyle[style.charAt(0) + style.substring(1).toLowerCase()]
+            return (ButtonStyle as any)[style.charAt(0) + style.substring(1).toLowerCase()]
     }
 }
 
@@ -32,5 +32,5 @@ export function convertTextInputStyle(type: string) {
         return TextInputStyle.Paragraph
     }
     type = type.trim().toUpperCase()
-    return TextInputStyle[type.charAt(0) + type.substring(1).toLowerCase()]
+    return (TextInputStyle as any)[type.charAt(0) + type.substring(1).toLowerCase()]
 }

@@ -2,7 +2,6 @@ import {ConfigHelper} from "../helper/ConfigHelper";
 import axios from "axios";
 import {Attachment} from "discord.js";
 import {logError, logNotice} from "../helper/LoggerHelper";
-import FormData from "form-data";
 
 export async function downloadFile(root: string, fileName: string) {
     const config = new ConfigHelper()
@@ -27,30 +26,30 @@ export async function downloadFile(root: string, fileName: string) {
 export async function uploadAttachment(attachment: Attachment, fileRoot = 'gcodes', filePath = '') {
     try {
         logNotice(`Upload for ${attachment.name} started`)
-        const attachmentData = await axios.get(attachment.url,
-            {responseType: 'arraybuffer'})
-
-        const formData = new FormData()
+        const attachmentResponse = await fetch(attachment.url)
+        const attachmentData = Buffer.from(await attachmentResponse.arrayBuffer())
         const configHelper = new ConfigHelper()
 
-        formData.append('file', attachmentData.data, attachment.name)
+        const formData = new FormData()
+        formData.append('file', new Blob([attachmentData]), attachment.name ?? 'file')
         formData.append('root', fileRoot)
         formData.append('path', filePath)
 
-        await axios.post(`${configHelper.getMoonrakerUrl()}/server/files/upload`,
-            formData,
-            {
-                'maxContentLength': Infinity,
-                'maxBodyLength': Infinity,
-                headers: {
-                    'X-Api-Key': configHelper.getMoonrakerApiKey(),
-                    'Content-Type': `multipart/form-data; boundary=${formData['_boundary']}`
-                }
-            })
+        const response = await fetch(`${configHelper.getMoonrakerUrl()}/server/files/upload`, {
+            method: 'POST',
+            headers: {
+                'X-Api-Key': configHelper.getMoonrakerApiKey()
+            },
+            body: formData
+        })
+
+        if (!response.ok) {
+            throw new Error(`upload HTTP ${response.status}: ${await response.text()}`)
+        }
         return true
     } catch (error) {
         logError(`Upload for ${attachment.name} failed:`)
-        logError(JSON.stringify(error, Object.getOwnPropertyNames(error)))
+        logError(JSON.stringify(error, Object.getOwnPropertyNames(error as Error)))
         return false
     }
 }

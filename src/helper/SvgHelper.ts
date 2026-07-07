@@ -1,7 +1,7 @@
 'use strict'
 
 export default class SvgHelper {
-    public calculateDonut(cx, cy, radius, strokeWidth, data) {
+    public calculateDonut(cx: any, cy: any, radius: any, strokeWidth: any, data: any) {
         const startAngle = -90
 
         const dataLength = data.length
@@ -45,7 +45,7 @@ export default class SvgHelper {
         return coords
     }
 
-    public generateIntervalsOf(interval, start, end) {
+    public generateIntervalsOf(interval: any, start: any, end: any) {
         const result = [];
         let current = start;
 

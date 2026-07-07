@@ -24,15 +24,18 @@ import {ClearAttachmentsHandler} from "./handlers/ClearAttachmentsHandler";
 import {WaitMessageHandler} from "./handlers/WaitMessageHandler";
 import {ConfigHelper} from "../../../helper/ConfigHelper";
 import {getEntry} from "../../../utils/CacheUtil";
+const HANDLER_CLASSES = [
+    WaitMessageHandler, ClearAttachmentsHandler, MacroHandler, DeleteHandler,
+    CameraSettingHandler, WebsocketHandler, ExcludeConfirmHandler, ModalHandler,
+    PrintJobStartHandler, EmbedHandler, MessageHandler, ReconnectHandler,
+    RefreshHandler, ListHandler, DownloadHandler, PageHandler, DeleteMessageHandler,
+    SetupHandler, NotificationHandler
+];
 
 export class ReactionInteraction {
     protected config = new ConfigHelper()
 
-    public constructor(interaction: MessageReaction | PartialMessageReaction) {
-        void this.executeHandler(interaction)
-    }
-
-    private async executeHandler(interaction: MessageReaction | PartialMessageReaction) {
+    public async execute(interaction: MessageReaction | PartialMessageReaction) {
         const emoji = interaction.emoji.toString()
         const message = interaction.message as Message
 
@@ -62,31 +65,19 @@ export class ReactionInteraction {
 
         const user = interaction.users.cache.first()
 
+        if (!user) {
+            logWarn(`could not resolve reacting user for: ${reactionId}`)
+            return
+        }
+
         logNotice(`${user.tag} reacted: ${reactionId}`)
 
         if (!permissionHelper.hasPermission(user, interaction.message.guild, reactionId)) {
             logWarn(`${user.tag} doesnt have the permission for: ${reactionId}`)
             return;
         }
-
-        await new WaitMessageHandler().executeHandler(message, user, reactionData)
-        await new ClearAttachmentsHandler().executeHandler(message, user, reactionData)
-        await new MacroHandler().executeHandler(message, user, reactionData)
-        await new DeleteHandler().executeHandler(message, user, reactionData)
-        await new CameraSettingHandler().executeHandler(message, user, reactionData)
-        await new WebsocketHandler().executeHandler(message, user, reactionData)
-        await new ExcludeConfirmHandler().executeHandler(message, user, reactionData)
-        await new ModalHandler().executeHandler(message, user, reactionData)
-        await new PrintJobStartHandler().executeHandler(message, user, reactionData)
-        await new EmbedHandler().executeHandler(message, user, reactionData)
-        await new MessageHandler().executeHandler(message, user, reactionData)
-        await new ReconnectHandler().executeHandler(message, user, reactionData)
-        await new RefreshHandler().executeHandler(message, user, reactionData)
-        await new ListHandler().executeHandler(message, user, reactionData)
-        await new DownloadHandler().executeHandler(message, user, reactionData)
-        await new PageHandler().executeHandler(message, user, reactionData)
-        await new DeleteMessageHandler().executeHandler(message, user, reactionData)
-        await new SetupHandler().executeHandler(message, user, reactionData)
-        await new NotificationHandler().executeHandler(message, user, reactionData)
+        await Promise.allSettled(HANDLER_CLASSES.map(Handler => 
+            new Handler().executeHandler(message, user, reactionData)
+        ))
     }
 }

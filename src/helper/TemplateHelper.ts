@@ -18,12 +18,12 @@ import {SpoolmanHelper} from "./SpoolmanHelper";
 import {existsSync} from "fs";
 import {logWarn} from "./LoggerHelper";
 import {AttachmentBuilder, EmbedBuilder, ModalBuilder} from "discord.js";
-import {get} from "lodash";
+import {getValueByPath} from "../utils/ObjectValueUtil";
 import PageListGraph from "./graphs/PageListGraph";
 import {LocaleHelper} from "./LocaleHelper";
 
 export class TemplateHelper {
-    protected parsedPlaceholders = []
+    protected parsedPlaceholders: any[] = []
     protected localeHelper = new LocaleHelper();
     protected locales = this.localeHelper.getLocale()
     protected syntaxLocales = this.localeHelper.getSyntaxLocale()
@@ -76,8 +76,8 @@ export class TemplateHelper {
         return unformattedData
     }
 
-    public async parseTemplate(type: string, id: string, providedPlaceholders = null, providedFields = null, providedValues = null) {
-        let messageObject = null
+    public async parseTemplate(type: string, id: string, providedPlaceholders: any = null, providedFields: any = null, providedValues: any = null) {
+        let messageObject: any = null
 
         if(providedPlaceholders === null) {providedPlaceholders = {}}
 
@@ -115,9 +115,9 @@ export class TemplateHelper {
 
         let messageObjectRaw = JSON.stringify(unformattedData)
 
-        let files = []
-        let components = []
-        const response = {
+        let files: any[] = []
+        let components: any[] = []
+        const response: Record<string, any> = {
             embeds: undefined,
             content: null
         }
@@ -136,11 +136,11 @@ export class TemplateHelper {
         const inputs = inputGenerator.generateInputs(messageObjectData.inputs)
 
         for (const selectionId in selections) {
-            components.push(selections[selectionId])
+            components.push((selections as any)[selectionId])
         }
 
         for (const rowId in buttons) {
-            components.push(buttons[rowId])
+            components.push((buttons as any)[rowId])
         }
 
         components.push(inputs)
@@ -185,7 +185,7 @@ export class TemplateHelper {
         if (typeof thumbnail === 'object') {
             files.push(thumbnail)
             if (thumbnail instanceof AttachmentBuilder) {
-                messageObject.setThumbnail(`attachment://${thumbnail.name}`)
+                messageObject.setThumbnail(`attachment://${(thumbnail as any).name}`)
             }
         }
 
@@ -204,10 +204,10 @@ export class TemplateHelper {
             messageObject.setImage(image)
         }
 
-        const field = []
+        const field: any[] = []
 
         if (typeof messageObjectData.field !== 'undefined') {
-            messageObjectData.field.forEach(fieldEntry => {
+            messageObjectData.field.forEach((fieldEntry: any) => {
                 if (fieldEntry.name === '') {
                     fieldEntry.name = 'N/A'
                 }
@@ -259,8 +259,8 @@ export class TemplateHelper {
         return inputData
     }
 
-    private async parseSinglePlaceholder(placeholder: any, providedPlaceholders = null) {
-        const placeholderId = String(placeholder).match(/(\${).*?}/g)[0]
+    private async parseSinglePlaceholder(placeholder: any, providedPlaceholders: any = null) {
+        const placeholderId = String(placeholder).match(/(\${).*?}/g)?.[0] ?? ''
         const placeholderContent = await this.parsePlaceholderContent(placeholderId, providedPlaceholders)
 
         if (placeholderContent.content === null || placeholderContent.content === '') {
@@ -277,12 +277,12 @@ export class TemplateHelper {
         })
     }
 
-    public async parsePlaceholder(input: string, providedPlaceholders = null) {
+    public async parsePlaceholder(input: string, providedPlaceholders: any = null) {
         const placeholders = input.matchAll(/(\${).*?}/g)
         this.parsedPlaceholders = []
 
         if (placeholders !== null) {
-            const promises = []
+            const promises: Promise<any>[] = []
 
             for (const placeholder of placeholders) {
                 promises.push(this.parseSinglePlaceholder(placeholder, providedPlaceholders))
@@ -344,21 +344,21 @@ export class TemplateHelper {
         return field
     }
 
-    private async parsePlaceholderContent(placeholder: string, providedPlaceholders = null) {
+    private async parsePlaceholderContent(placeholder: string, providedPlaceholders: any = null) {
         const placeholderId = placeholder
             .replace(/(\${)/g, '')
             .replace(/}/g, '')
 
         if(placeholderId.startsWith("locale")) {
             return {
-                'content': `${get(this.locales, placeholderId.replace('locale.', ''))}`,
+                'content': `${getValueByPath(this.locales, placeholderId.replace('locale.', ''))}`,
                 'double_dash': true
             }
         }
 
         if(placeholderId.startsWith("syntax_locale")) {
             return {
-                'content': `${get(this.syntaxLocales, placeholderId.replace('syntax_locale.', ''))}`,
+                'content': `${getValueByPath(this.syntaxLocales, placeholderId.replace('syntax_locale.', ''))}`,
                 'double_dash': true
             }
         }
@@ -400,13 +400,13 @@ export class TemplateHelper {
             const templateFragments = placeholderId.split(':')
 
             for (const index in templateFragments) {
-                const templateFragment = templateFragments[index]
+                const templateFragment = templateFragments[index] ?? ''
 
                 const cacheMatch = findValue(templateFragment)
                 let providedMatch = undefined
 
                 if (providedPlaceholders) {
-                    providedMatch = get(providedPlaceholders, templateFragment)
+                    providedMatch = getValueByPath(providedPlaceholders, templateFragment)
                 }
 
                 if (cacheMatch) {

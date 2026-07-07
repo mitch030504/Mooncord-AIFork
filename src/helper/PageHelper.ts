@@ -11,8 +11,8 @@ import {HistoryHelper} from "./HistoryHelper";
 export class PageHelper {
     protected config = new ConfigHelper()
     protected template = new TemplateHelper()
-    protected data: []
-    protected embedId: string
+    protected data!: any[]
+    protected embedId!: string
     protected embeds = []
     protected cacheKey: string | undefined = undefined
     protected pageLocale: any
@@ -42,7 +42,7 @@ export class PageHelper {
         const page = this.getNewPage(pageUp, currentPage)
         if (this.embeds.length > 0 && page.calcPage < this.embeds.length) {
             const embedId = this.embeds[page.calcPage]
-            const embed = await (new EmbedHelper()).generateEmbed(embedId, {pages: `${page.labelPage}/${this.getLastPage()}`})
+            const embed = await (new EmbedHelper()).generateEmbed(embedId as any, {pages: `${page.labelPage}/${this.getLastPage()}`})
 
             return {
                 embed: embed.embed,

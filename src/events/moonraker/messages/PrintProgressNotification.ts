@@ -7,7 +7,7 @@ import {updateTimes} from "../../../helper/TimeHelper";
 import {getEntry} from "../../../utils/CacheUtil";
 
 export class PrintProgressNotification {
-    public async parse(message) {
+    public async parse(message: any) {
         const functionCache = getEntry('function')
 
         if (functionCache.current_status !== 'printing') {

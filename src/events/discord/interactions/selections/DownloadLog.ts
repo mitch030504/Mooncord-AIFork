@@ -60,7 +60,7 @@ export class DownloadLogSelection extends BaseSelection {
 
             logSuccess(`${logFile} Log Download successful!`)
             return attachment
-        } catch (error) {
+        } catch (error: any) {
             if (typeof error.code !== 'undefined') {
                 logError(`${logFile} Log Download failed: ${error.config.url}: ${error.code}`)
                 logError(JSON.stringify(error, Object.getOwnPropertyNames(error)))
