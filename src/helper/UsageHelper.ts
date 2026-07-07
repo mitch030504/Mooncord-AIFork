@@ -25,8 +25,8 @@ export class UsageHelper {
     }
 
     public updateSystemLoad() {
-        const coreCount = findValue('machine_info.system_info.cpu_info.cpu_count')
-        const systemLoad = findValue('state.system_stats.sysload')
+        const coreCount = findValue('machine_info.system_info.cpu_info.cpu_count') || 1
+        const systemLoad = findValue('state.system_stats.sysload') || 0
 
         const percent = ((systemLoad / coreCount) * 100).toFixed(2)
 
@@ -37,11 +37,10 @@ export class UsageHelper {
 
     public updateMemoryUsage() {
         const totalMemoryRaw = bytes.parse(
-            findValue('machine_info.system_info.cpu_info.total_memory') +
-            findValue('machine_info.system_info.cpu_info.memory_units'))
+            `${findValue('machine_info.system_info.cpu_info.total_memory')}${findValue('machine_info.system_info.cpu_info.memory_units')}`) || 0
 
-        const freeMemoryRaw = findValue('state.system_stats.memavail')
-        const usedMemoryRaw = totalMemoryRaw - freeMemoryRaw * 1024
+        const freeMemoryRaw = findValue('state.system_stats.memavail') || 0
+        const usedMemoryRaw = totalMemoryRaw > 0 ? totalMemoryRaw - freeMemoryRaw * 1024 : 0
 
         const totalMemory = (totalMemoryRaw / (1024 ** 3))
             .toFixed(2)

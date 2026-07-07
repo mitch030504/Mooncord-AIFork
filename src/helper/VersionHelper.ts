@@ -5,7 +5,7 @@ import {LocaleHelper} from "./LocaleHelper";
 
 export class VersionHelper {
     public getFields() {
-        const versionData = findValue('updates.version_info')
+        const versionData = findValue('updates.version_info') || {}
         const fields = []
         for (const component in versionData) {
             if (component !== 'system') {
@@ -24,7 +24,7 @@ export class VersionHelper {
     }
 
     public getUpdateFields() {
-        const versionData = findValue('updates.version_info')
+        const versionData = findValue('updates.version_info') || {}
         const fields = []
         const locale = new LocaleHelper().getLocale()
 
@@ -46,7 +46,7 @@ export class VersionHelper {
     }
 
     public updateAvailable() {
-        const versionData = findValue('updates.version_info')
+        const versionData = findValue('updates.version_info') || {}
         let updateAvailable = false
 
         for (const component in versionData) {

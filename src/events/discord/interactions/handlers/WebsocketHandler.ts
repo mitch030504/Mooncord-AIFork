@@ -39,8 +39,17 @@ export class WebsocketHandler extends BaseHandler {
 
         for (let websocketCommand of data.websocket_requests) {
             const updateCache = websocketCommand.update_cache
+            const method = websocketCommand.method
 
             delete websocketCommand['update_cache']
+
+            if ((method === 'machine.update.full' || method === 'machine.update.refresh') && getEntry('config').general.disable_system_updates) {
+                logWarn('System updates are disabled in config (disable_system_updates: true). Blocked websocket method: ' + method)
+                if (interaction !== null) {
+                    await interaction.editReply('❌ System updates are disabled in the bot configuration for safety reasons.')
+                }
+                continue
+            }
 
             websocketCommand = await this.templateHelper.parsePlaceholder(JSON.stringify(websocketCommand))
 

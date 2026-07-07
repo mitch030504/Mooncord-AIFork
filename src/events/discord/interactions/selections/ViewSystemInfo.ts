@@ -23,11 +23,15 @@ export class ViewSystemInfo extends BaseSelection {
             embedData = await this.embedHelper.generateEmbed(`systeminfo_${component}`)
         }
 
-        await currentMessage.edit({components: undefined})
-        await currentMessage.removeAttachments()
+        try {
+            await currentMessage.edit({components: undefined})
+            await currentMessage.removeAttachments()
 
-        await currentMessage.edit(embedData.embed)
+            await currentMessage.edit(embedData.embed)
 
-        await interaction.deleteReply()
+            await interaction.deleteReply()
+        } catch (e) {
+            // Message might have been deleted, ignore
+        }
     }
 }
