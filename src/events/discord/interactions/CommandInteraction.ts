@@ -33,9 +33,11 @@ import PowerDeviceCommand from "./commands/PowerDeviceCommand";
 import HistoryCommand from "./commands/HistoryCommand";
 import TimelapseListCommand from "./commands/TimelapseListCommand";
 import BedMeshCommand from "./commands/BedMeshCommand";
+import FilamentsCommand from "./commands/FilamentsCommand";
 
 const COMMAND_CLASSES: Record<string, any> = {
     admin: AdminCommand,
+    filaments: FilamentsCommand,
     fileinfo: FileInfoCommand,
     info: InfoCommand,
     dump: DumpCommand,

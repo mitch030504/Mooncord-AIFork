@@ -138,6 +138,10 @@
             "title": "Bed Leveling Mesh",
             "description": "Variance: `${variance}`mm\nMin: `${min}`mm\nMax: `${max}`mm\nProfile: `${profile}`"
         },
+        "filaments": {
+            "title": "Currently Loaded Filaments",
+            "description": ""
+        },
         "printjob_start_request": {
             "title": "Start Print Job?",
             "description": "Print Time: ${estimated_time}\nSlicer: ${slicer}\nSlicer Version: ${slicer_version}\nHeight: ${object_height}mm"
@@ -940,6 +944,10 @@
         "history": {
             "description": "Shows the Print History.",
             "command": "history"
+        },
+        "filaments": {
+            "description": "Lists all the filaments currently in use (Qidi Box & External)",
+            "command": "filaments"
         }
     },
     "graph": {

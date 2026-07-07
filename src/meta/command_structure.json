@@ -165,5 +165,6 @@
   },
   "temp": {},
   "bedmesh": {},
-  "history": {}
+  "history": {},
+  "filaments": {}
 }
