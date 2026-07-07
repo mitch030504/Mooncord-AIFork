@@ -14,6 +14,7 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/locales ./locales
 COPY --from=builder /app/assets ./assets
 COPY --from=builder /app/scripts ./scripts
+COPY --from=builder /app/src/meta ./src/meta
 USER node
 ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["node", "dist/index.js"]
