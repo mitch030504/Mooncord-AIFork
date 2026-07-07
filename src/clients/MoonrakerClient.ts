@@ -123,10 +123,27 @@ export class MoonrakerClient {
         delete subscriptionObjects['bed_mesh']
 
         logRegular('Subscribe to Moonraker Objects...')
-        let data = (await this.send({
-            "method": "printer.objects.subscribe",
-            "params": {"objects": subscriptionObjects}
-        })).result.status
+        let data: any
+        try {
+            const subResult = await this.send({
+                "method": "printer.objects.subscribe",
+                "params": {"objects": subscriptionObjects}
+            })
+            data = subResult.result.status
+        } catch (e) {
+            logWarn(`Failed to subscribe to Moonraker objects: ${e}`)
+            // Fallback: query objects individually instead
+            try {
+                const queryResult = await this.send({
+                    "method": "printer.objects.query",
+                    "params": {"objects": subscriptionObjects}
+                })
+                data = queryResult.result.status
+            } catch (e2) {
+                logWarn(`Failed to query Moonraker objects: ${e2}`)
+                data = {}
+            }
+        }
 
         data = this.clearStateData(data)
 

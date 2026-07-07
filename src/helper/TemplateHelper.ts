@@ -252,6 +252,7 @@ export class TemplateHelper {
 
         for (const inputId of data) {
             const inputMetaData = metaData[inputId]
+            if (!inputMetaData) continue
             inputMetaData.id = inputId
             inputData.push(inputMetaData)
         }

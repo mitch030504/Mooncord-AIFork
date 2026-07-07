@@ -58,6 +58,7 @@ export default class PreheatCommand extends BaseCommand {
             const heaterName = heater.replace(/(heater_generic )/g, '')
             const heaterTemp = interaction.options.getInteger(heaterName)
             const heaterData = tempHelper.getHeaterConfigData(heater)
+            if (!heaterData) continue
             const heaterMaxTemp = Number(heaterData.max_temp)
             const heaterMinTemp = Number(heaterData.min_temp)
 

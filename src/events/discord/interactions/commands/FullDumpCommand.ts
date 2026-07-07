@@ -7,8 +7,6 @@ export default class FullDumpCommand extends BaseCommand {
     ephemeral = true
 
     async handleCommand(interaction: ChatInputCommandInteraction) {
-        await interaction.deferReply({ephemeral: true});
-
         try {
             // Get all available objects
             const listResponse = await this.moonrakerClient.send({"method": "printer.objects.list"});

@@ -194,6 +194,7 @@ export class TempHelper {
 
     public async setHeaterTemp(heater: string, heaterTemp: number) {
         const heaterData = findValue(`state.configfile.config.${heater}`)
+        if (!heaterData) return false
         const heaterMaxTemp = Number(heaterData.max_temp)
         const heaterMinTemp = Number(heaterData.min_temp)
         const locale = new LocaleHelper().getLocale()
