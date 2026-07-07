@@ -18,8 +18,11 @@ This fork brings the original Mooncord codebase up to modern Node.js and TypeScr
 - **Memory Leak Fix**: Resolved a critical memory leak in the Moonraker WebSocket client caused by orphaned/timed-out JSON-RPC requests.
 - **Continuous Reconnect Loop**: Fixed a bug where the bot would stop trying to reconnect if the printer was left offline. The bot now explicitly cleans up old WebSocket connections on failure and maintains an infinite, stable reconnect loop with flat memory usage.
 - **Discord Interaction Optimization**: Massively optimized command execution. Previously, all 26 command handlers were blindly instantiated on *every* Discord interaction; it now statically maps strictly to the target command ID to instantly execute only the requested command.
+- **Qidi Q2 / Closed-System Safety**: Added a `disable_system_updates` toggle to safely disable Moonraker upgrade commands from Discord, preventing accidental firmware corruption on custom Klipper machines.
+- **Instantaneous API Responses (WebSocket Polling Fix)**: Completely eliminated an artificial 500ms polling bottleneck on every Moonraker request. The bot now uses native Promises to resolve data instantly as soon as the printer replies.
+- **Hardened Metadata Handling**: Fixed several crashes and `TypeError` bugs that occurred when closed-source printers omitted certain hardware metadata (like `last_stats` or OS distribution info).
+- **Stateful Regex & Race Condition Fixes**: Resolved silent bugs that caused G-code and Timelapse files to randomly disappear from menus, and fixed race conditions in the Print History handler.
 - **Floating Promise Safety**: Refactored the internal interaction structures so they no longer execute asynchronous tasks as floating promises inside constructors, completely eliminating the risk of Unhandled Promise Rejections silently crashing Node.js.
-
 ---
 
 ## 📦 What is Mooncord?
