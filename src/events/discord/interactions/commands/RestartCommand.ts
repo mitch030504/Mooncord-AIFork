@@ -3,10 +3,10 @@ import {ChatInputCommandInteraction, User} from "discord.js";
 
 export default class RestartCommand extends BaseCommand {
     commandId = 'restart'
-    protected user: User
+    protected user!: User
 
     async handleCommand(interaction: ChatInputCommandInteraction) {
-        const service = interaction.options.getString(this.syntaxLocale.commands.restart.options.service.name)
+        const service = interaction.options.getString(this.syntaxLocale.commands.restart.options.service.name)!
 
         this.user = interaction.user
 
@@ -44,14 +44,14 @@ export default class RestartCommand extends BaseCommand {
     }
 
     private async restartFirmware() {
-        void await this.moonrakerClient.send({"method": "printer.firmware_restart"})
+        await this.moonrakerClient.send({"method": "printer.firmware_restart"})
 
         return this.locale.messages.answers.firmware_restart_successful
             .replace(/(\${username})/g, this.user.tag)
     }
 
     private async restartHost() {
-        void await this.moonrakerClient.send({"method": "machine.reboot"})
+        await this.moonrakerClient.send({"method": "machine.reboot"})
 
         return this.locale.messages.answers.firmware_restart_successful
             .replace(/(\${username})/g, this.user.tag)

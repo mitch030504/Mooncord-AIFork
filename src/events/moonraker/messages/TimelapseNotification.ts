@@ -16,7 +16,7 @@ export class TimelapseNotification {
     protected locale = this.localeHelper.getLocale()
     protected notificationHelper = new NotificationHelper()
 
-    public async parse(message) {
+    public async parse(message: any) {
         if (typeof (message.method) === 'undefined') {
             return false
         }
@@ -52,10 +52,6 @@ export class TimelapseNotification {
         await this.notificationHelper.broadcastMessage(timelapseContent.message)
 
         unlinkSync(timelapseContent.path)
-
-        if (global.gc) {
-            global.gc()
-        }
 
         return true
     }

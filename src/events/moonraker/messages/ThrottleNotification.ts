@@ -14,7 +14,7 @@ export class ThrottleNotification {
     ]
     protected cooldownValue = 120
 
-    public async parse(message) {
+    public async parse(message: any) {
         if (typeof (message.method) === 'undefined') {
             return false
         }
@@ -46,7 +46,7 @@ export class ThrottleNotification {
         return true
     }
 
-    private async broadcastThrottle(flag: string, currentThrottleState) {
+    private async broadcastThrottle(flag: string, currentThrottleState: any) {
         if (!this.validFlags.includes(flag)) {
             return
         }

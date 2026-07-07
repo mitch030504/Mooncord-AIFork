@@ -12,7 +12,7 @@ export class FileListHelper {
         const moonrakerClient = getMoonrakerClient()
 
         const message = {"method": "server.files.list", "params": {"root": root}}
-        new Promise(async (resolve, reject) => {
+        void (async () => {
             const currentFiles = await moonrakerClient.send(message)
 
             let result = currentFiles.result
@@ -23,7 +23,7 @@ export class FileListHelper {
 
             const historyHelper = new HistoryHelper()
 
-            result.sort((a, b) => (a.modified < b.modified) ? 1 : -1)
+            result.sort((a: any, b: any) => (a.modified < b.modified) ? 1 : -1)
 
             if (filter !== undefined && filter !== null) {
                 const filteredResult = []
@@ -58,7 +58,7 @@ export class FileListHelper {
                 const iconConfig = getIcons()
 
                 for (const resultPartial of result) {
-                    let partialJobs = jobs.filter((element) => {
+                    let partialJobs = jobs.filter((element: any) => {
                         return resultPartial.path === element.filename
                     })
 
@@ -68,13 +68,13 @@ export class FileListHelper {
                         continue
                     }
 
-                    partialJobs.sort((a, b) => (a.start_time < b.start_time) ? 1 : -1)
+                    partialJobs.sort((a: any, b: any) => (a.start_time < b.start_time) ? 1 : -1)
 
                     const lastStatus = partialJobs[0].status
 
-                    partialJobs = partialJobs.filter((element => {
+                    partialJobs = partialJobs.filter((element: any) => {
                         return element.status === lastStatus
-                    }))
+                    })
 
                     if (lastStatus === 'in_progress') {
                         resultPartial.label = `${resultPartial.path} ${iconConfig.in_progress.list_icon}`
@@ -87,7 +87,7 @@ export class FileListHelper {
 
                 setData(cacheKey, tempResult)
             }
-        })
+        })()
     }
 
     public getCurrentFiles() {

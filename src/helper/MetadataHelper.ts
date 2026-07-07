@@ -7,10 +7,9 @@ import path from "path";
 import axios from "axios";
 import {updateTimes} from "./TimeHelper";
 import {updateLayers} from "./LayerHelper";
-import * as StackTrace from 'stacktrace-js'
 import {logEmpty, logError, logRegular} from "./LoggerHelper"
 import {AttachmentBuilder} from "discord.js";
-import {fileFromSync} from "node-fetch";
+import {readFile} from "node:fs/promises";
 import {formatTime} from "../utils/FormatUtil";
 import {HistoryHelper} from "./HistoryHelper";
 
@@ -57,18 +56,18 @@ export class MetadataHelper {
         const jobs = historyCache.jobs.jobs
 
         if (historyCache && historyCache.jobs) {
-            let partialJobs = jobs.filter((element) => {
+            let partialJobs = jobs.filter((element: any) => {
                 return metaData.result.filename === element.filename
             })
 
             if (partialJobs.length > 0) {
-                partialJobs.sort((a, b) => (a.start_time < b.start_time) ? 1 : -1)
+                partialJobs.sort((a: any, b: any) => (a.start_time < b.start_time) ? 1 : -1)
 
                 const lastStatus = partialJobs[0].status
 
-                partialJobs = partialJobs.filter((element => {
+                partialJobs = partialJobs.filter((element: any) => {
                     return element.status === lastStatus
-                }))
+                })
 
                 metaData.result.job_status = {
                     count: partialJobs.length,
@@ -120,7 +119,7 @@ export class MetadataHelper {
         const url = configHelper.getMoonrakerUrl()
 
         if(bufferMode) {
-            placeholder = Buffer.from(await fileFromSync(placeholderPath).arrayBuffer())
+            placeholder = Buffer.from(await readFile(placeholderPath))
         }
 
         if (typeof metaData === 'undefined') {
@@ -130,7 +129,7 @@ export class MetadataHelper {
             return placeholder
         }
 
-        const thumbnailFile = metaData.thumbnails.reduce((prev, current) => {
+        const thumbnailFile = metaData.thumbnails.reduce((prev: any, current: any) => {
             if(small)
                 return (prev.size < current.size) ? prev : current
 
@@ -144,7 +143,7 @@ export class MetadataHelper {
             thumbnail = await this.getBuffer(thumbnailURL)
             logRegular(`retrieved ${small ? 'small ': ''}Thumbnail for ${filename}`)
         } catch (error) {
-            const trace = await StackTrace.get()
+            const trace = new Error().stack
             logEmpty()
             logError('Thumbnail Error:')
             logError(`Url: ${thumbnailURL}`)

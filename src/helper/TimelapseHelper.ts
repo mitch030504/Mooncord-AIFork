@@ -11,18 +11,17 @@ import {DiscordInputGenerator} from "../generator/DiscordInputGenerator";
 import {TemplateHelper} from "./TemplateHelper";
 import {getEntry} from "../utils/CacheUtil";
 import {AttachmentBuilder} from "discord.js";
-import {fileFromSync} from "node-fetch";
-import StackTrace from "stacktrace-js";
+import {readFile} from "node:fs/promises";
 import {MetadataHelper} from "./MetadataHelper";
 
 export class TimelapseHelper {
-    protected timelapseFile = {}
+    protected timelapseFile: any = {}
 
     public async getThumbnail(timelapseName: string) {
         const config = new ConfigHelper()
 
         const placeholderPath = path.resolve(__dirname, `../assets/icon-sets/${config.getIconSet()}/thumbnail_not_found.png`)
-        const placeholder = Buffer.from(await fileFromSync(placeholderPath).arrayBuffer())
+        const placeholder = Buffer.from(await readFile(placeholderPath))
 
         const restUrl = getEntry('moonraker_client').rest_url
 
@@ -34,7 +33,7 @@ export class TimelapseHelper {
             thumbnail = await metadataHelper.getBuffer(thumbnailUrl)
             logRegular(`retrieved Timelapse Thumbnail ${timelapseName}`)
         } catch (error) {
-            const trace = await StackTrace.get()
+            const trace = new Error().stack
             logEmpty()
             logError('Thumbnail Error:')
             logError(`Url: ${thumbnailUrl}`)
@@ -85,7 +84,7 @@ export class TimelapseHelper {
         const buttons = new DiscordInputGenerator().generateButtons(buttonData)
 
         for (const rowId in buttons) {
-            components.push(buttons[rowId])
+            components.push((buttons as any)[rowId])
         }
 
         const attachment = new AttachmentBuilder(timelapsePath, {name: filename})

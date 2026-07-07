@@ -10,7 +10,7 @@ import {getMoonrakerClient} from "../../../Application";
 export class SubscriptionNotification {
     protected moonrakerClient = getMoonrakerClient()
 
-    public async parse(message) {
+    public async parse(message: any) {
         if (typeof (message.method) === 'undefined') {
             return false
         }
@@ -36,7 +36,7 @@ export class SubscriptionNotification {
         return true
     }
 
-    private async parsePrintStats(printStatsData) {
+    private async parsePrintStats(printStatsData: any) {
         if (typeof printStatsData.state === 'undefined') {
             return
         }

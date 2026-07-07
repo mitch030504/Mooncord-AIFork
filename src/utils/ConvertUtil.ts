@@ -5,5 +5,5 @@ export function convertActivityStyle(type: string) {
         return ActivityType.Custom
     }
     type = type.trim().toUpperCase()
-    return ActivityType[type.charAt(0) + type.substring(1).toLowerCase()]
+    return (ActivityType as any)[type.charAt(0) + type.substring(1).toLowerCase()]
 }

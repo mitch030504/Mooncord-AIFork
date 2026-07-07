@@ -7,7 +7,7 @@ export default class PowerDeviceCommand extends BaseCommand {
     commandId = 'power'
 
     async handleCommand(interaction: ChatInputCommandInteraction) {
-        const powerDevice = interaction.options.getString(this.syntaxLocale.commands.power.options.device.name)
+        const powerDevice = interaction.options.getString(this.syntaxLocale.commands.power.options.device.name)!
         const powerDeviceData = new PowerDeviceHelper().getPowerDeviceData(powerDevice)
 
         if (powerDevice === null || powerDeviceData === null) {

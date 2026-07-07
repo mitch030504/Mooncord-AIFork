@@ -32,7 +32,7 @@ export class ExcludeObjectsSelection extends BaseSelection {
         embed.setImage(`attachment://${excludeGraph.name}`)
 
         const currentMessage = interaction.message as Message
-        await currentMessage.edit({components: null})
+        await currentMessage.edit({components: undefined})
         await currentMessage.removeAttachments()
 
         await currentMessage.edit({embeds: [embed], files, components})

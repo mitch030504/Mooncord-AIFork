@@ -5,11 +5,11 @@ import {findValue} from "../../../../utils/CacheUtil";
 import BaseHandler from "../abstracts/BaseHandler";
 
 export class MessageHandler extends BaseHandler {
-    async isValid(message: Message, user: User, data, interaction = null) {
+    async isValid(message: Message, user: User, data: any, interaction: any = null) {
         return typeof data.message !== 'undefined';
     }
 
-    async handleHandler(message: Message, user: User, data, interaction = null) {
+    async handleHandler(message: Message, user: User, data: any, interaction: any = null) {
         const embed = message.embeds[0]
 
         let label = data.label
@@ -49,7 +49,7 @@ export class MessageHandler extends BaseHandler {
                 return
             }
 
-            await message.edit({components: null, embeds: null})
+            await message.edit({components: undefined, embeds: undefined})
             await message.removeAttachments()
 
             if (interaction !== null) {

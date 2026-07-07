@@ -5,6 +5,7 @@ import {TempHelper} from "../../../../helper/TempHelper";
 import {getMoonrakerClient} from "../../../../Application";
 import {ConfigHelper} from "../../../../helper/ConfigHelper";
 import {logRegular} from "../../../../helper/LoggerHelper";
+import {escapeRegExp} from "../../../../utils/FormatUtil";
 
 export default class PreheatCommand extends BaseCommand {
     commandId = 'preheat'
@@ -23,7 +24,7 @@ export default class PreheatCommand extends BaseCommand {
         switch (subCommand) {
             case this.syntaxLocale.commands.preheat.options.preset.name: {
                 await interaction.deleteReply()
-                const preset = interaction.options.getString(this.syntaxLocale.commands.preheat.options.preset.options.preset.name)
+                const preset = interaction.options.getString(this.syntaxLocale.commands.preheat.options.preset.options.preset.name)!
                 await this.heatProfile(preset)
 
                 await interaction.editReply(this.locale.messages.answers.preheat_preset.preset
@@ -95,7 +96,7 @@ export default class PreheatCommand extends BaseCommand {
     private async heatProfile(profileName: string) {
         const moonrakerClient = getMoonrakerClient()
         const tempHelper = new TempHelper()
-        const preset = new ConfigHelper().getEntriesByFilter(new RegExp(`^preset ${profileName}$`, "g"), false)[0]
+        const preset = new ConfigHelper().getEntriesByFilter(new RegExp(`^preset ${escapeRegExp(profileName)}$`, "g"), false)[0]
 
         if (preset.gcode) {
             logRegular(`execute ${preset.gcode}...`)

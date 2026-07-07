@@ -6,7 +6,7 @@ export default class SystemInfoCommand extends BaseCommand {
     commandId = 'systeminfo';
 
     async handleCommand(interaction: ChatInputCommandInteraction) {
-        const componentArgument = interaction.options.getString(this.syntaxLocale.commands.systeminfo.options.component.name)
+        const componentArgument = interaction.options.getString(this.syntaxLocale.commands.systeminfo.options.component.name)!
 
         let embed: any
 

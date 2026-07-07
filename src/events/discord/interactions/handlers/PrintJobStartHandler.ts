@@ -4,11 +4,11 @@ import {Message, User} from "discord.js";
 import BaseHandler from "../abstracts/BaseHandler";
 
 export class PrintJobStartHandler extends BaseHandler {
-    async isValid(message: Message, user: User, data, interaction = null) {
+    async isValid(message: Message, user: User, data: any, interaction: any = null) {
         return data.functions.includes("start_print");
     }
 
-    async handleHandler(message: Message, user: User, data, interaction = null) {
+    async handleHandler(message: Message, user: User, data: any, interaction: any = null) {
         const embed = message.embeds[0]
 
         const printFile = this.embedHelper.getAuthorName(embed)

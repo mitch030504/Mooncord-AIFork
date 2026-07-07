@@ -7,6 +7,7 @@ import {waitUntil} from 'async-wait-until'
 import {
     changePath,
     changeTempPath,
+    gracefulShutdown,
     logEmpty,
     logError,
     logRegular,
@@ -31,13 +32,17 @@ let messageHandler: MessageHandler
 
 export class MoonrakerClient {
     protected ready = false
-    protected websocket: Websocket
+    protected websocket!: Websocket
     protected alreadyRunning = false
-    protected reconnectScheduler: any
+    protected reconnectScheduler: ReturnType<typeof setInterval> | undefined
     protected reconnectAttempt = 1
 
     public async connect() {
         logSuccess('Connect to Moonraker...')
+
+        if (this.websocket) {
+            this.websocket.close()
+        }
 
         this.ready = false
 
@@ -141,7 +146,7 @@ export class MoonrakerClient {
             'rest_url': config.getMoonrakerUrl(),
             'url': this.websocket.underlyingWebsocket.url,
             'readySince': Date.now() / 1000,
-            'event_count': this.websocket.underlyingWebsocket['_eventsCount']
+            'event_count': (this.websocket.underlyingWebsocket as any)['_eventsCount']
         })
 
         await updateAllRestEndpoints()
@@ -165,8 +170,8 @@ export class MoonrakerClient {
         logSuccess('Moonraker Client is ready')
     }
 
-    public sendThread(message, timeout = 10_000) {
-        new Promise(async (resolve, reject) => {
+    public sendThread(message: Record<string, any>, timeout: number = 10_000) {
+        void (async () => {
             try {
                 await this.send(message, timeout)
             } catch (error) {
@@ -174,20 +179,28 @@ export class MoonrakerClient {
                 logError(JSON.stringify(error, Object.getOwnPropertyNames(error)))
                 logError(`Websocket Request: ${JSON.stringify(message, null, 4)}`)
             }
-        })
+        })()
     }
 
-    public async send(message, timeout = 10_000) {
-        const id = Math.floor(Math.random() * 100_000) + 1
+    public async send(message: Record<string, any>, timeout: number = 10_000) {
+        const id = Math.floor(Math.random() * 1_000_000_000) + 1
 
         message.id = id
         message.jsonrpc = '2.0'
 
+        requests[id] = null
+
         this.websocket.send(JSON.stringify(message))
 
-        await waitUntil(() => typeof requests[id] !== 'undefined', {timeout, intervalBetweenAttempts: 500})
-
-        return requests[id]
+        try {
+            await waitUntil(() => requests[id] !== null, {timeout, intervalBetweenAttempts: 500})
+            const result = requests[id]
+            delete requests[id]
+            return result
+        } catch (e) {
+            delete requests[id]
+            throw e
+        }
     }
 
     public isReady() {
@@ -237,21 +250,15 @@ export class MoonrakerClient {
         return data
     }
 
-    private async errorHandler(instance, event) {
+    private async errorHandler(instance: Websocket, event: any) {
         const reason = event.message
         logEmpty()
         logError('Websocket Error:')
         logError(event.error)
-        if (!this.alreadyRunning) {
-            process.exit(5)
-        }
     }
 
-    private async closeHandler(instance, event) {
+    private async closeHandler(instance: Websocket, event: any) {
         logWarn('Moonraker disconnected!')
-        if (!this.alreadyRunning) {
-            return
-        }
         if (this.reconnectAttempt !== 1) {
             return
         }
@@ -262,13 +269,17 @@ export class MoonrakerClient {
         const config = new ConfigHelper()
 
         this.reconnectScheduler = setInterval(async () => {
-            logRegular(`Reconnect Attempt ${this.reconnectAttempt} to Moonraker...`)
-            await this.connect()
-            this.reconnectAttempt++
+            try {
+                logRegular(`Reconnect Attempt ${this.reconnectAttempt} to Moonraker...`)
+                await this.connect()
+                this.reconnectAttempt++
+            } catch (error) {
+                logError(error)
+            }
         }, config.getMoonrakerRetryInterval() * 15_000)
     }
 
-    private async connectHandler(instance, event) {
+    private async connectHandler(instance: Websocket, event: any) {
         if (this.alreadyRunning) {
             return
         }
@@ -284,7 +295,7 @@ export class MoonrakerClient {
         this.changeLogPath()
     }
 
-    private async reconnectHandler(instance, event) {
+    private async reconnectHandler(instance: Websocket, event: any) {
         if (!this.alreadyRunning) {
             return
         }
@@ -311,13 +322,13 @@ export class MoonrakerClient {
         await statusHelper.update()
     }
 
-    private getCacheData(websocketCommand: any, cacheKey: string) {
-        new Promise(async (resolve, reject) => {
+    private getCacheData(websocketCommand: Record<string, any>, cacheKey: string) {
+        void (async () => {
             logRegular(`Retrieve Data for ${cacheKey}...`)
             const data = await this.send(websocketCommand, 300_000)
 
             setData(cacheKey, data.result)
-        })
+        })()
     }
 
     private registerEvents() {
@@ -332,7 +343,9 @@ export class MoonrakerClient {
                 return
             }
 
-            requests[messageData.id] = messageData
+            if (typeof requests[messageData.id] !== 'undefined') {
+                requests[messageData.id] = messageData
+            }
         }))
 
         messageHandler = new MessageHandler(this.websocket)

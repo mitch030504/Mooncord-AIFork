@@ -6,7 +6,7 @@ import path from "path";
 import {getEntry, getNewExpireAtDate, setData, updateData} from "../utils/CacheUtil";
 import {ConfigHelper} from "./ConfigHelper";
 import {logRegular} from "./LoggerHelper";
-import {get} from "lodash";
+import {getValueByPath} from "../utils/ObjectValueUtil";
 
 export class LocaleHelper {
     public getLocale() {
@@ -39,11 +39,11 @@ export class LocaleHelper {
 
     public getMessageById(placeholderId: string) {
         if(placeholderId.startsWith("locale")) {
-            return `${get(this.getLocale(), placeholderId.replace('locale.', ''))}`
+            return `${getValueByPath(this.getLocale(), placeholderId.replace('locale.', ''))}`
         }
 
         if(placeholderId.startsWith("syntax_locale")) {
-            return `${get(this.getSyntaxLocale(), placeholderId.replace('syntax_locale.', ''))}`
+            return `${getValueByPath(this.getSyntaxLocale(), placeholderId.replace('syntax_locale.', ''))}`
         }
     }
 
@@ -92,7 +92,7 @@ export class LocaleHelper {
         const response = {
             locale: JSON.parse(localeRaw),
             syntax_locale: JSON.parse(syntaxLocaleRaw),
-            expires_at: undefined
+            expires_at: undefined as number | undefined
         }
 
         response.expires_at = getNewExpireAtDate()

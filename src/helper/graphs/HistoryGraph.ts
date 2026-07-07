@@ -9,7 +9,7 @@ import BaseGraph from "./BaseGraph";
 export default class HistoryGraph extends BaseGraph{
     filename = 'historyGraph.png'
 
-    public async renderGraph(printStats = undefined) {
+    public async renderGraph(printStats: any = null) {
         if(!printStats) {
             printStats = await (new HistoryHelper()).getPrintStats()
         }

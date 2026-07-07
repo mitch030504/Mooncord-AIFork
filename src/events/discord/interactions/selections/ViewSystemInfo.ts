@@ -16,14 +16,14 @@ export class ViewSystemInfo extends BaseSelection {
 
         let embedData: any
 
-        if (component.startsWith('mcu')) {
-            const mcuData = mcuHelper.getMCULoad(component)
+        if (component?.startsWith('mcu')) {
+            const mcuData = mcuHelper.getMCULoad(component as string)
             embedData = await this.embedHelper.generateEmbed(`systeminfo_mcu`, mcuData)
         } else {
             embedData = await this.embedHelper.generateEmbed(`systeminfo_${component}`)
         }
 
-        await currentMessage.edit({components: null})
+        await currentMessage.edit({components: undefined})
         await currentMessage.removeAttachments()
 
         await currentMessage.edit(embedData.embed)

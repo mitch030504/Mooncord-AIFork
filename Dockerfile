@@ -1,22 +1,18 @@
-FROM node:16-alpine as builder
-
+FROM node:26-alpine AS builder
 WORKDIR /app
-
-COPY . .
-
+COPY package*.json ./
 RUN npm ci
+COPY . .
 RUN npm run build
 
-FROM node:16-alpine
-
+FROM node:26-alpine
 WORKDIR /app
-
 RUN apk add --no-cache tini ffmpeg
-
-# Since dist/ will not contain everything needed to run Mooncord, copy all of /app for now
-COPY --from=builder /app/ /app/
-
+COPY package*.json ./
+RUN npm ci --omit=dev
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/locales ./locales
+COPY --from=builder /app/assets ./assets
 USER node
-
 ENTRYPOINT ["/sbin/tini", "--"]
-CMD ["node", "/app/dist/index.js"]
+CMD ["node", "dist/index.js"]

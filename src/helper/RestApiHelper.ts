@@ -18,7 +18,7 @@ export async function updateRestEndpoint(key: string) {
     try {
         const config = new ConfigHelper()
 
-        const endpoint = apiEndpoints[key]
+        const endpoint = (apiEndpoints as any)[key]
 
         const result = await axios.get(`${config.getMoonrakerUrl()}/${endpoint}`)
 
@@ -30,6 +30,6 @@ export async function updateRestEndpoint(key: string) {
 
         setData(key, data.result);
     } catch (error) {
-        setData(key, {});
+        setData(key, {} as any);
     }
 }

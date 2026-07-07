@@ -9,7 +9,7 @@ import {LocaleHelper} from "../helper/LocaleHelper";
 export class DiscordStatusGenerator {
 
     public generateStatusCache() {
-        const tempCache = {}
+        const tempCache: Record<string, any> = {}
         const localeHelper = new LocaleHelper()
         const configHelper = new ConfigHelper()
         const statusMeta = configHelper.getStatusMeta()

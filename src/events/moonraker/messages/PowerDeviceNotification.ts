@@ -4,7 +4,7 @@ import {logNotice} from "../../../helper/LoggerHelper";
 import {PowerDeviceHelper} from "../../../helper/PowerDeviceHelper";
 
 export class PowerDeviceNotification {
-    public parse(message) {
+    public parse(message: any) {
         if (typeof (message.method) === 'undefined') {
             return false
         }

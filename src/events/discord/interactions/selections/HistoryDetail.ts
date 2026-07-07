@@ -1,7 +1,6 @@
 import BaseSelection from "../abstracts/BaseSelection";
 import {Message, StringSelectMenuInteraction} from "discord.js";
 import {getEntry} from "../../../../utils/CacheUtil";
-import _ from "lodash";
 import HistoryGraph from "../../../../helper/graphs/HistoryGraph";
 import {HistoryHelper} from "../../../../helper/HistoryHelper";
 import {formatTime} from "../../../../utils/FormatUtil";
@@ -14,9 +13,9 @@ export class HistoryDetail extends BaseSelection {
         const jobs = (await new HistoryHelper().getCache()).jobs.jobs
         const historyGraph = new HistoryGraph()
         const historyHelper = new HistoryHelper()
-        const similarJobs = {}
+        const similarJobs: Record<string, number> = {}
 
-        const job = _.find(jobs, {job_id: jobId})
+        const job = jobs.find((j: any) => j.job_id === jobId)
 
         const gcodeFile = job.filename
 
@@ -26,7 +25,7 @@ export class HistoryDetail extends BaseSelection {
                 similarJobs[jobPartial.status] = 0
             }
 
-            similarJobs[jobPartial.status] += 1
+            similarJobs[jobPartial.status] = (similarJobs[jobPartial.status] ?? 0) + 1
         }
 
         const jobStats =
@@ -43,8 +42,8 @@ export class HistoryDetail extends BaseSelection {
         const embedData = await this.embedHelper.generateEmbed('history_detail', {...job, ...job.metadata})
         const embed = embedData.embed.embeds[0]
 
-        embed.setThumbnail(`attachment://${thumbnail.name}`)
-        embed.setImage(`attachment://${graph.name}`)
+        embed.setThumbnail(`attachment://${(thumbnail as any).name}`)
+        embed.setImage(`attachment://${(graph as any).name}`)
         embed.addFields(await historyHelper.parseFields(jobStats))
 
         embedData.embed.embeds = [embed]
@@ -52,7 +51,7 @@ export class HistoryDetail extends BaseSelection {
 
         const currentMessage = interaction.message as Message
 
-        await currentMessage.edit({components: null})
+        await currentMessage.edit({components: undefined})
         await currentMessage.removeAttachments()
 
         await currentMessage.edit(embedData.embed)

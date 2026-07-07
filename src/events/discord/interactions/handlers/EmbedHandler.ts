@@ -4,16 +4,16 @@ import {Message, User} from "discord.js";
 import BaseHandler from "../abstracts/BaseHandler";
 
 export class EmbedHandler extends BaseHandler {
-    async isValid(message: Message, user: User, data, interaction = null) {
+    async isValid(message: Message, user: User, data: any, interaction: any = null) {
         return typeof data.embed !== 'undefined';
     }
 
-    async handleHandler(message: Message, user: User, data, interaction = null) {
+    async handleHandler(message: Message, user: User, data: any, interaction: any = null) {
         if (interaction !== null && !interaction.replied && !interaction.deferred) {
             await interaction.deferReply()
         }
 
-        await message.edit({components: null, embeds: null})
+        await message.edit({components: undefined, embeds: undefined})
         await message.removeAttachments()
 
         const currentEmbed = message.embeds[0]
@@ -46,7 +46,7 @@ export class EmbedHandler extends BaseHandler {
         if (data.functions.includes('fetch_author_metadata')) {
             const thumbnail = await this.metadataHelper.getThumbnail(author)
 
-            embedData.embed.embeds[0].setThumbnail(`attachment://${thumbnail.name}`)
+            embedData.embed.embeds[0].setThumbnail(`attachment://${(thumbnail as any).name}`)
             embedData.embed['files'].push(thumbnail)
         }
 

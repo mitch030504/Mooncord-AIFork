@@ -21,7 +21,7 @@ export class PowerDeviceHelper {
 
     public getPowerDevices() {
         logRegular('Retrieve Power Devices...')
-        new Promise(async (resolve, reject) => {
+        void (async () => {
             const powerDevicesData = await getMoonrakerClient().send({"method": "machine.device_power.devices"})
 
             if (powerDevicesData.error !== undefined) {
@@ -29,7 +29,7 @@ export class PowerDeviceHelper {
             }
 
             setData('power_devices', powerDevicesData.result.devices)
-        })
+        })()
     }
 
     public updatePowerDevice(powerDeviceData: any) {

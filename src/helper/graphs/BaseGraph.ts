@@ -8,7 +8,7 @@ import path from "path";
 import {TemplateHelper} from "../TemplateHelper";
 
 export default class BaseGraph {
-    filename: string;
+    filename!: string;
     config = new ConfigHelper();
     generalConfig = this.config.getConfig().general;
     templateHelper = new TemplateHelper()

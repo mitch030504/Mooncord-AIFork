@@ -35,14 +35,14 @@ export default class EditChannelCommand extends BaseCommand {
             channel = channelOption as TextChannel
         }
 
-        if (!Object.keys(broadcastList).includes(interaction.guildId)) {
-            broadcastList[interaction.guildId] = {
+        if (!Object.keys(broadcastList).includes(interaction.guildId as string)) {
+            broadcastList[interaction.guildId as string] = {
                 'broadcast_channels': []
             }
             await this.database.updateDatabaseEntry('guilds', broadcastList)
         }
 
-        const broadcastChannels = broadcastList[interaction.guildId].broadcast_channels
+        const broadcastChannels = broadcastList[interaction.guildId as string].broadcast_channels
 
         let answer
 
@@ -54,7 +54,7 @@ export default class EditChannelCommand extends BaseCommand {
             answer = this.locale.messages.answers.broadcast_channel.activated
         }
 
-        broadcastList[interaction.guildId].broadcast_channels = broadcastChannels
+        broadcastList[interaction.guildId as string].broadcast_channels = broadcastChannels
 
         answer = answer
             .replace(/\${username}/g, user.tag)

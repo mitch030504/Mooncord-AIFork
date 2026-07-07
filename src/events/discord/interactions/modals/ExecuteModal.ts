@@ -8,10 +8,10 @@ export class ExecuteModal extends BaseModal {
 
     async handleModal(interaction: ModalSubmitInteraction) {
         const componentRows = interaction.components
-        const input = componentRows[0].components[0]
+        const input = (componentRows[0] as any).components[0]
         const gcodes = input.value.split('\n')
 
-        const gcodeValid = await this.consoleHelper.executeGcodeCommands(gcodes, interaction.channel)
+        const gcodeValid = await this.consoleHelper.executeGcodeCommands(gcodes, interaction.channel as any)
 
         let answer = this.locale.messages.answers.execute_successful
             .replace(/\${username}/g, interaction.user.tag)

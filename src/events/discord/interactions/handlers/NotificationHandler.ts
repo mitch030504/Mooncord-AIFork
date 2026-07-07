@@ -5,12 +5,12 @@ import {removeFromArray} from "../../../../helper/DataHelper";
 import BaseHandler from "../abstracts/BaseHandler";
 
 export class NotificationHandler extends BaseHandler {
-    async isValid(message: Message, user: User, data, interaction = null) {
+    async isValid(message: Message, user: User, data: any, interaction: any = null) {
         return !(!data.functions.includes("notify_enable")
             && !data.functions.includes("notify_disable"))
     }
 
-    async handleHandler(message: Message, user: User, data, interaction = null) {
+    async handleHandler(message: Message, user: User, data: any, interaction: any = null) {
         const notifyList = this.database.getDatabaseEntry('notify')
 
         if (!notifyList.includes(user.id) && data.functions.includes("notify_enable")) {

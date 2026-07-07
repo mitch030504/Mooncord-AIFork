@@ -4,7 +4,7 @@ import {HistoryHelper} from "../../../helper/HistoryHelper";
 
 export class HistoryUpdateNotification {
 
-    public async parse(message) {
+    public async parse(message: any) {
         if (typeof (message.method) === 'undefined') {
             return false
         }

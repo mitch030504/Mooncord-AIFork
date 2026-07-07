@@ -5,14 +5,11 @@ import {sleep} from "./DataHelper";
 import axios from "axios";
 import {resolve} from "path"
 import {logEmpty, logError, logRegular} from "./LoggerHelper";
-import StackTrace from "stacktrace-js";
 import {getMoonrakerClient} from "../Application";
 import {getEntry, setData} from "../utils/CacheUtil";
 import {AttachmentBuilder} from "discord.js";
 import SharpRenderBackend from "./snapshotBackend/SharpRenderBackend";
-import JimpRenderBackend from "./snapshotBackend/JimpRenderBackend";
 import NoneRenderBackend from "./snapshotBackend/NoneRenderBackend";
-import GraphicsMagickRenderBackend from "./snapshotBackend/GraphicsMagickRenderBackend";
 
 export class WebcamHelper {
     public async generateCache() {
@@ -25,7 +22,7 @@ export class WebcamHelper {
         let activeWebcam = ''
 
         const webcamCache = {
-            entries: {},
+            entries: {} as Record<string, any>,
             active: ''
         }
 
@@ -110,7 +107,7 @@ export class WebcamHelper {
             }
 
             if (webcamData.snapshot_url.startsWith('/'))
-                webcamData.snapshot_url = `http://localhost${webcamData.snapshot_url}`
+                webcamData.snapshot_url = `http://192.168.8.194${webcamData.snapshot_url}`
 
             logRegular('Run Webcam pre Tasks if present...')
             await this.executePostProcess(beforeStatus)
@@ -123,7 +120,8 @@ export class WebcamHelper {
                 timeout: 2000
             })
 
-            if (!res.headers['content-type'].startsWith('image')) {
+            const contentType = res.headers['content-type'] as string | undefined
+            if (!contentType || !contentType.startsWith('image')) {
                 throw new Error('the Webcam URL is not a static image!')
             }
 
@@ -141,22 +139,9 @@ export class WebcamHelper {
 
                 let editBuffer: Buffer
 
-                logRegular(`modify the Snapshot with the ${snapshotConfig.backend} backend...`)
+                logRegular(`modify the Snapshot with the sharp backend...`)
 
-                switch (snapshotConfig.backend) {
-                    case 'jimp':
-                        editBuffer = await new JimpRenderBackend(buffer, webcamData).render()
-                        break
-                    case 'graphicsmagick':
-                    case 'gm':
-                        editBuffer = await new GraphicsMagickRenderBackend(
-                            buffer,
-                            webcamData)
-                            .render()
-                        break
-                    default:
-                        editBuffer = await new SharpRenderBackend(buffer, webcamData).render()
-                }
+                editBuffer = await new SharpRenderBackend(buffer, webcamData).render()
 
                 buffer.fill(0)
 
@@ -165,7 +150,7 @@ export class WebcamHelper {
 
             return new AttachmentBuilder(buffer, {name: "snapshot.png"})
         } catch (error) {
-            const trace = await StackTrace.get()
+            const trace = new Error().stack
 
             let url = 'not configured'
 
@@ -196,17 +181,17 @@ export class WebcamHelper {
         )
     }
 
-    private triggerWebsite(url, post) {
-        new Promise(async (resolve, reject) => {
+    private triggerWebsite(url: string, post: boolean) {
+        void (async () => {
             if (post) {
                 await axios.post(url)
                 return
             }
             await axios.get(url)
-        })
+        })()
     }
 
-    private async executePostProcess(config) {
+    private async executePostProcess(config: any) {
         if (!config.enable || config.execute.length === 0) {
             return
         }

@@ -15,7 +15,7 @@ export class ServiceHelper {
         const functionCache = getEntry('function')
         const currentStatus = functionCache.current_status
 
-        let service = servicesMeta[fileName]
+        let service = (servicesMeta as any)[fileName]
 
         if (typeof service === 'undefined') {
             service = 'klipper'

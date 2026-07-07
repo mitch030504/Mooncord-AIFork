@@ -16,13 +16,14 @@ import {WebcamChange} from "./selections/WebcamChange";
 import {DownloadLogSelection} from "./selections/DownloadLog";
 import {HistoryDetail} from "./selections/HistoryDetail";
 
+const SELECTION_CLASSES = [
+    ViewPrintJobSelection, ViewSystemInfo, ShowTempSelection, DownloadConfig,
+    ExcludeObjectsSelection, DownloadTimelapse, WebcamChange, DownloadLogSelection, HistoryDetail
+];
+
 export class SelectInteraction {
 
-    public constructor(interaction: Interaction) {
-        void this.execute(interaction)
-    }
-
-    private async execute(interaction: Interaction) {
+    public async execute(interaction: Interaction) {
         if (!interaction.isStringSelectMenu()) {
             return
         }
@@ -49,15 +50,9 @@ export class SelectInteraction {
             return;
         }
 
-        void new ViewPrintJobSelection().executeSelection(interaction, selectId)
-        void new ViewSystemInfo().executeSelection(interaction, selectId)
-        void new ShowTempSelection().executeSelection(interaction, selectId)
-        void new DownloadConfig().executeSelection(interaction, selectId)
-        void new ExcludeObjectsSelection().executeSelection(interaction, selectId)
-        void new DownloadTimelapse().executeSelection(interaction, selectId)
-        void new WebcamChange().executeSelection(interaction, selectId)
-        void new DownloadLogSelection().executeSelection(interaction, selectId)
-        void new HistoryDetail().executeSelection(interaction, selectId)
+        await Promise.allSettled(SELECTION_CLASSES.map(Selection => 
+            new Selection().executeSelection(interaction, selectId)
+        ))
 
         await sleep(1_000)
 

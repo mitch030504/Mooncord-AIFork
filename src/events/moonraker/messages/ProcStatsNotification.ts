@@ -3,7 +3,7 @@
 import {setData} from "../../../utils/CacheUtil";
 
 export class ProcStatsNotification {
-    public parse(message) {
+    public parse(message: any) {
         if (typeof (message.method) === 'undefined') {
             return false
         }

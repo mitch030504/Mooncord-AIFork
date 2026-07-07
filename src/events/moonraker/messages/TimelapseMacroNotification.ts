@@ -4,7 +4,7 @@ import {getEntry, setData} from "../../../utils/CacheUtil";
 import {sleep} from "../../../helper/DataHelper";
 
 export class TimelapseMacroNotification {
-    public async parse(message) {
+    public async parse(message: any) {
         if (typeof (message.params) === 'undefined') {
             return false
         }

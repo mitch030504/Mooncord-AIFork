@@ -9,7 +9,7 @@ export class ViewPrintJobSelection extends BaseSelection {
     selectionId = 'printlist_view_printjob'
 
     async handleSelection(interaction: StringSelectMenuInteraction) {
-        const gcodeFile = findValueByPartial(getEntry('gcode_files'), interaction.values[0], 'path')
+        const gcodeFile = findValueByPartial(getEntry('gcode_files'), interaction.values[0] as string, 'path')
 
         const metadata = await this.metadataHelper.getMetaData(gcodeFile)
 
@@ -25,14 +25,14 @@ export class ViewPrintJobSelection extends BaseSelection {
         const embedData = await this.embedHelper.generateEmbed('fileinfo', metadata)
         const embed = embedData.embed.embeds[0]
 
-        embed.setThumbnail(`attachment://${thumbnail.name}`)
+        embed.setThumbnail(`attachment://${(thumbnail as any).name}`)
 
         embedData.embed.embeds = [embed]
         embedData.embed['files'] = [thumbnail]
 
         const currentMessage = interaction.message as Message
 
-        await currentMessage.edit({components: null})
+        await currentMessage.edit({components: undefined})
         await currentMessage.removeAttachments()
 
         await currentMessage.edit(embedData.embed)

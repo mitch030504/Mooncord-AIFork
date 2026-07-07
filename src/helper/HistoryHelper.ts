@@ -8,7 +8,7 @@ import {getIcons} from "./DataHelper";
 
 export class HistoryHelper {
     protected moonrakerClient = getMoonrakerClient()
-    protected jobListResult = []
+    protected jobListResult: any[] = []
 
     public async getPrintJobStats() {
        const cache = await this.getCache()
@@ -19,8 +19,8 @@ export class HistoryHelper {
         }
     }
 
-    public async getCache() {
-        let cache = getEntry('history')
+    public async getCache(): Promise<any> {
+        let cache: any = getEntry('history')
 
         if (!cache) {
             cache = await this.parseData()
@@ -35,7 +35,7 @@ export class HistoryHelper {
         const jobListPartialResult = await this.moonrakerClient.send(printJobsCommand)
 
         if (Array.isArray(jobListPartialResult.result.jobs)) {
-            const cleanedJobs = jobListPartialResult.result.jobs.map(job => {
+            const cleanedJobs = jobListPartialResult.result.jobs.map((job: any) => {
                 delete job['auxiliary_data']
                 delete job['exists']
                 delete job['user']
@@ -60,14 +60,14 @@ export class HistoryHelper {
 
         const loopLimit = Math.ceil(printTotalRequest.result.job_totals.total_jobs / totalLimit)
 
-        this.jobListResult = []
+        this.jobListResult = [] as any[]
 
-        const jobListResult = {
+        const jobListResult: any = {
             count: printTotalRequest.result.job_totals.total_jobs,
-            jobs: []
+            jobs: [] as any[]
         }
 
-        const promises = []
+        const promises: Promise<any>[] = []
 
         for (let i = 0; i < loopLimit; i++) {
             const start = i > 0 ? totalLimit * i + 1 : 0
@@ -77,7 +77,7 @@ export class HistoryHelper {
 
         await Promise.all(promises)
 
-        const cache = {
+        const cache: any = {
             total: undefined,
             jobs: undefined,
             expires_at: undefined
@@ -85,7 +85,7 @@ export class HistoryHelper {
 
         jobListResult.jobs = this.jobListResult
 
-        jobListResult.jobs.sort((a, b) => {
+        jobListResult.jobs.sort((a: any, b: any) => {
             return b.job_id.localeCompare(a.job_id)
         })
 
@@ -97,7 +97,7 @@ export class HistoryHelper {
 
         setData('history', cache)
 
-        this.jobListResult = []
+        this.jobListResult = [] as any[]
 
         return cache
     }
@@ -115,7 +115,7 @@ export class HistoryHelper {
 
         const printStats = {
             count: printJobs.count,
-            stats: {}
+            stats: {} as Record<string, number>
         }
 
         if (printJobs.jobs === undefined) {
@@ -127,23 +127,23 @@ export class HistoryHelper {
             if (printStats.stats[printJob.status] === undefined) {
                 printStats.stats[printJob.status] = 0
             }
-            printStats.stats[printJob.status] += 1
+            printStats.stats[printJob.status] = (printStats.stats[printJob.status] ?? 0) + 1
         }
 
         return printStats
     }
 
-    public async parseFields(printStats = undefined) {
+    public async parseFields(printStats: any = undefined) {
         if(!printStats) {
             printStats = await this.getPrintStats()
         }
         const chartConfigSection = getIcons()
         const locale = new LocaleHelper().getLocale()
-        const fields = []
+        const fields: any[] = []
 
         for (const printStat in printStats.stats) {
             const printStatCount = printStats.stats[printStat]
-            const valueData = []
+            const valueData: any[] = []
             const fieldData = {
                 name: printStat,
                 value: '',

@@ -8,11 +8,11 @@ import {updateData} from "../utils/CacheUtil";
 import {stripAnsi} from "../utils/FormatUtil";
 
 let tempLog = ''
-let log_file: fs.WriteStream
+let log_file!: fs.WriteStream
 const log_stdout = process.stdout
 
 function hookLogFile() {
-    console.log = (d) => {
+    console.log = (d: unknown) => {
         const consoleOutput = `${util.format(d)}\n`
         const consoleLogOutput = stripAnsi(consoleOutput)
 
@@ -24,7 +24,7 @@ function hookLogFile() {
 }
 
 export function unhookTempLog() {
-    console.log = (d) => {
+    console.log = (d: unknown) => {
         const consoleOutput = `${util.format(d)}\n`
 
         log_stdout.write(consoleOutput)
@@ -34,7 +34,7 @@ export function unhookTempLog() {
 }
 
 export function tempHookLog() {
-    console.log = (d) => {
+    console.log = (d: unknown) => {
         const consoleOutput = `${util.format(d)}\n`
         const consoleLogOutput = stripAnsi(consoleOutput)
 
@@ -47,11 +47,30 @@ export function tempHookLog() {
 }
 
 export function hookProcess() {
-    process.on('uncaughtException', (err) => {
+    process.on('uncaughtException', (err: Error) => {
         logEmpty()
         logError(`${err.name}: ${err.message}
             ${err.stack}`)
     })
+    process.on('unhandledRejection', (reason: unknown) => {
+        logEmpty()
+        const message = reason instanceof Error
+            ? `${reason.name}: ${reason.message}\n${reason.stack}`
+            : String(reason)
+        logError(`Unhandled Rejection: ${message}`)
+    })
+}
+
+export function gracefulShutdown(code: number = 1, reason?: unknown) {
+    if (reason !== undefined) {
+        logError(`Shutting down: ${util.format(reason)}`)
+    }
+    try {
+        log_file?.end()
+    } catch {
+        // log_file may not be initialized yet
+    }
+    process.exit(code)
 }
 
 export function changeTempPath(tempPath: string) {
@@ -92,27 +111,27 @@ export function changePath(directory: string) {
     hookLogFile()
 }
 
-export function logError(message) {
+export function logError(message: unknown) {
     console.log(`${getLevel('error')} ${getTimeStamp()} ${util.format(message)}`.red)
 }
 
-export function logSuccess(message) {
+export function logSuccess(message: unknown) {
     console.log(`${getLevel('info')} ${getTimeStamp()} ${util.format(message)}`.green)
 }
 
-export function logRegular(message) {
+export function logRegular(message: unknown) {
     console.log(`${getLevel('info')} ${getTimeStamp()} ${util.format(message)}`.white)
 }
 
-export function logNotice(message) {
+export function logNotice(message: unknown) {
     console.log(`${getLevel('info')} ${getTimeStamp()} ${util.format(message)}`.magenta)
 }
 
-export function logWarn(message) {
+export function logWarn(message: unknown) {
     console.log(`${getLevel('warn')} ${getTimeStamp()} ${util.format(message)}`.yellow)
 }
 
-export function logCustom(message, level = "info") {
+export function logCustom(message: unknown, level = "info") {
     console.log(`${getLevel(level)} ${getTimeStamp()} ${util.format(message)}`)
 }
 

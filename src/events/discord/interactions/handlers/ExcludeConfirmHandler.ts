@@ -4,11 +4,11 @@ import {Message, User} from "discord.js";
 import BaseHandler from "../abstracts/BaseHandler";
 
 export class ExcludeConfirmHandler extends BaseHandler {
-    async isValid(message: Message, user: User, data, interaction = null) {
+    async isValid(message: Message, user: User, data: any, interaction: any = null) {
         return data.functions.includes("exclude_object");
     }
 
-    async handleHandler(message: Message, user: User, data, interaction = null) {
+    async handleHandler(message: Message, user: User, data: any, interaction: any = null) {
         if (interaction !== null && !interaction.deferred && !interaction.replied) {
             await interaction.deferReply()
         }

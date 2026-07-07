@@ -27,14 +27,14 @@ export class ConfigHelper {
     }
 
     public getUserConfig() {
-        return this.parseConfig(args[0], 'mooncord.cfg')
+        return this.parseConfig(args[0] as any, 'mooncord.cfg')
     }
 
     public getUserConfigPath() {
         return args[0]
     }
 
-    public writeUserConfig(modifiedConfig) {
+    public writeUserConfig(modifiedConfig: any) {
         updateData('config', modifiedConfig)
 
         logWarn('write config is currently unsupported!')
@@ -79,11 +79,11 @@ export class ConfigHelper {
     }
 
     public getMoonrakerApiKey() {
-        return this.getEntriesByFilter(/^connection$/g)[0].moonraker_token
+        return process.env.MOONRAKER_TOKEN ?? this.getEntriesByFilter(/^connection$/g)[0].moonraker_token
     }
 
     public getDiscordToken() {
-        return this.getEntriesByFilter(/^connection$/g)[0].bot_token
+        return process.env.DISCORD_TOKEN ?? this.getEntriesByFilter(/^connection$/g)[0].bot_token
     }
 
     public getStatusInterval() {

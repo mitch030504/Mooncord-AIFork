@@ -26,7 +26,7 @@ export default class PrintjobCommand extends BaseCommand {
             case this.syntaxLocale.commands.printjob.options.start.name: {
                 await this.requestPrintjob(interaction.options.getString(
                     this.syntaxLocale.commands.printjob.options.start.options.file.name
-                ), interaction)
+                )!, interaction)
                 break
             }
         }
@@ -51,7 +51,7 @@ export default class PrintjobCommand extends BaseCommand {
         const embedData = await this.embedHelper.generateEmbed('printjob_start_request', metadata)
         const embed = embedData.embed.embeds[0] as EmbedBuilder
 
-        embed.setThumbnail(`attachment://${thumbnail.name}`)
+        embed.setThumbnail(`attachment://${(thumbnail as any).name}`)
 
         embedData.embed.embeds = [embed]
         embedData.embed['files'] = [thumbnail]
@@ -59,7 +59,7 @@ export default class PrintjobCommand extends BaseCommand {
         await interaction.editReply(embedData.embed)
     }
 
-    private async triggerMacro(buttonId: string, interaction: CommandInteraction, subLocale, status = '') {
+    private async triggerMacro(buttonId: string, interaction: CommandInteraction, subLocale: any, status = '') {
         const buttonsCache = getEntry('buttons')
         const buttonData = buttonsCache[buttonId]
         const moonrakerClient = getMoonrakerClient()

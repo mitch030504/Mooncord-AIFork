@@ -13,8 +13,7 @@ import {LocaleHelper} from "../helper/LocaleHelper";
 import {MetadataHelper} from "../helper/MetadataHelper";
 import {GCodeUploadHandler} from "../events/discord/GCodeUploadHandler";
 import {VerifyHandler} from "../events/discord/VerifyHandler";
-// @ts-ignore
-import {REST} from '@discordjs/rest'
+import {REST} from 'discord.js'
 import {ReconnectHandler} from "../events/discord/ReconnectHandler";
 import {convertActivityStyle} from "../utils/ConvertUtil";
 
@@ -27,8 +26,8 @@ let gcodeUploadHandler: GCodeUploadHandler
 let verifyHandler: VerifyHandler
 
 export class DiscordClient {
-    protected discordClient: Client
-    protected restClient: REST
+    protected discordClient!: Client
+    protected restClient!: REST
 
     public async connect() {
         const config = new ConfigHelper()
@@ -114,9 +113,9 @@ export class DiscordClient {
 
         setData('discord_client', {
             'readySince': Date.now() / 1000,
-            'applicationId': this.discordClient.application.id,
-            'clientId': this.discordClient.user.id,
-            'event_count': this.discordClient['_eventsCount']
+            'applicationId': this.discordClient.application?.id,
+            'clientId': this.discordClient.user?.id,
+            'event_count': (this.discordClient as any)['_eventsCount']
         })
 
         await this.registerCommands()
@@ -125,17 +124,17 @@ export class DiscordClient {
 
         this.generateCaches()
 
-        const inviteUrl = `https://discord.com/oauth2/authorize?client_id=${this.discordClient.user.id}&permissions=3422944320&scope=bot%20applications.commands`
+        const inviteUrl = `https://discord.com/oauth2/authorize?client_id=${this.discordClient.user?.id}&permissions=3422944320&scope=bot%20applications.commands`
 
         await database.updateDatabaseEntry('invite_url', inviteUrl)
 
         setData('invite_url', inviteUrl)
         updateData('discord_client', {
-            'event_count': this.discordClient['_eventsCount']
+            'event_count': (this.discordClient as any)['_eventsCount']
         })
 
         logSuccess('Discordbot Connected')
-        logSuccess(`${'Name:'.green} ${(this.discordClient.user.tag).white}`)
+        logSuccess(`${'Name:'.green} ${(this.discordClient.user?.tag || '').white}`)
         logSuccess('Invite:'.green)
         console.log(getEntry('invite_url').cyan)
 

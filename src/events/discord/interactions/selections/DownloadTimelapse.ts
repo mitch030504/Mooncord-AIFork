@@ -14,7 +14,7 @@ export class DownloadTimelapse extends BaseSelection {
     async handleSelection(interaction: StringSelectMenuInteraction) {
         const timelapseHelper = new TimelapseHelper()
 
-        const timelapseFile = findValueByPartial(getEntry('timelapse_files'), interaction.values[0], 'path')
+        const timelapseFile = findValueByPartial(getEntry('timelapse_files'), interaction.values[0] as string, 'path')
 
         const placeholderMessage = this.locale.messages.answers.timelapse_render
             .replace(/(\${timelapsefile})/g, timelapseFile)
@@ -39,9 +39,5 @@ export class DownloadTimelapse extends BaseSelection {
         await currentMessage.edit(timelapseContent.message)
 
         unlinkSync(timelapseContent.path)
-
-        if (global.gc) {
-            global.gc()
-        }
     }
 }

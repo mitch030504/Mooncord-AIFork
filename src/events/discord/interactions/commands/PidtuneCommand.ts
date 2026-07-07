@@ -9,7 +9,7 @@ export default class PidtuneCommand extends BaseCommand {
         const functionCache = getEntry('function')
 
         const temp = interaction.options.getInteger(this.syntaxLocale.commands.pidtune.options.temperature.name)
-        const heater = interaction.options.getString(this.syntaxLocale.commands.pidtune.options.heater.name)
+        const heater = interaction.options.getString(this.syntaxLocale.commands.pidtune.options.heater.name)!
 
         if (functionCache.current_status !== 'ready') {
             await interaction.editReply(this.locale.messages.errors.command_idle_only
