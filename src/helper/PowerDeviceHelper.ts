@@ -37,7 +37,7 @@ export class PowerDeviceHelper {
         for (const index in powerDeviceCache) {
             const powerDevice = powerDeviceCache[index]
 
-            if (powerDeviceData.device = powerDevice.device) {
+            if (powerDeviceData.device === powerDevice.device) {
                 powerDeviceCache[index] = powerDeviceData
             }
         }
@@ -49,12 +49,12 @@ export class PowerDeviceHelper {
         const fields = []
         const locale = new LocaleHelper().getLocale()
         const powerDeviceCache = getEntry('power_devices')
-        const powerDeviceMeta = getEntry('config')['power_device_meta']
+        const icons = getEntry('config')['icons']
 
         const onLabel = locale.embeds.fields.on
-            .replace(/(\${icon})/g, powerDeviceMeta.on.icon)
+            .replace(/(\${icon})/g, icons.power_device_on.icon)
         const offLabel = locale.embeds.fields.off
-            .replace(/(\${icon})/g, powerDeviceMeta.off.icon)
+            .replace(/(\${icon})/g, icons.power_device_off.icon)
 
         for (const powerDevice of powerDeviceCache) {
             fields.push({
