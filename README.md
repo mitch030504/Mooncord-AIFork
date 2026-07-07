@@ -1,13 +1,23 @@
 # Mooncord-AIFork
 
 > [!WARNING]
-> **DISCLAIMER: This is a fork of Mooncord that is fully maintained with AI.**
-
-![Title](https://raw.githubusercontent.com/eliteSchwein/mooncord/master/assets/images/github-title.png)
+> **DISCLAIMER: This is a modernized fork of Mooncord that is actively maintained with AI.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 This is a modernized, highly-optimized fork of [Mooncord](https://github.com/eliteSchwein/mooncord) by eliteSchwein. Mooncord is a Discord Bot for [Moonraker](https://github.com/Arksine/moonraker).
+
+---
+
+## 📦 What is Mooncord?
+
+Mooncord allows you to monitor and control your Klipper/Moonraker 3D printer directly from Discord.
+
+- **Basic Controls:** Start, pause, resume, and stop prints directly from Discord chat.
+- **Status Notifications:** Receive automatic status messages via DM or in a dedicated guild text channel.
+- **Visuals:** Integrates seamlessly with [Moonraker-Timelapse](https://github.com/mainsail-crew/moonraker-timelapse) and webcams to show you what your printer is doing.
+
+---
 
 ## 🚀 Fork Features & Improvements
 
@@ -23,13 +33,21 @@ This fork brings the original Mooncord codebase up to modern Node.js and TypeScr
 - **Hardened Metadata Handling**: Fixed several crashes and `TypeError` bugs that occurred when closed-source printers omitted certain hardware metadata (like `last_stats` or OS distribution info).
 - **Stateful Regex & Race Condition Fixes**: Resolved silent bugs that caused G-code and Timelapse files to randomly disappear from menus, and fixed race conditions in the Print History handler.
 - **Floating Promise Safety**: Refactored the internal interaction structures so they no longer execute asynchronous tasks as floating promises inside constructors, completely eliminating the risk of Unhandled Promise Rejections silently crashing Node.js.
+
 ---
 
-## 📦 What is Mooncord?
+## 📖 Setup & Installation
 
-Mooncord has basic Controls, example Start/Pause/Stop a Print, but also has a [Timelapse](https://github.com/mainsail-crew/moonraker-timelapse) integration.
-It will also send you via DM or/and in a Guide Text Channel automatically Status Messages.
+### Docker (Recommended)
 
-## 📖 Setup & Guides
+The easiest way to run this fork is via Docker. We automatically publish images to the GitHub Container Registry (`ghcr.io`).
 
-Please go into the original [Wiki Tab](https://github.com/eliteSchwein/mooncord/wiki) for the official Setup Guides.
+```bash
+docker pull ghcr.io/mitch030504/mooncord-aifork:latest
+```
+
+### Configuration
+
+For complete official setup guides, including how to configure your Discord Bot Token and Moonraker connection, please refer to the original [Mooncord Wiki](https://github.com/eliteSchwein/mooncord/wiki).
+
+*Note: All configuration options from the original Mooncord remain compatible with this fork.*
