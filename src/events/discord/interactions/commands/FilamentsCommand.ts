@@ -70,7 +70,7 @@ export default class FilamentsCommand extends BaseCommand {
             // Loop through Box Slots (0 to 3)
             for (let i = 0; i < 4; i++) {
                 const slotKey = `slot${i}`;
-                const hasFilament = states[slotKey] === 1;
+                const hasFilament = config[`slot${i}`] === 1 || states[slotKey] === 1 || states[slotKey] === true;
                 const material = materials[slotKey] || {};
                 const filament = material.filament || {};
 
@@ -78,9 +78,9 @@ export default class FilamentsCommand extends BaseCommand {
                 const isToolActive = currentTool !== -1 && config[`value_t${currentTool}`] === slotKey;
                 const isSlotLoaded = lastLoaded === slotKey && extruderLoaded;
 
-                let slotName = `**Slot ${slotNum}**`;
+                let slotPrefix = `**Slot ${slotNum}:** `;
                 if (isToolActive) {
-                    slotName = `👉 **Slot ${slotNum} (T${currentTool})**`;
+                    slotPrefix = `👉 **Slot ${slotNum} (T${currentTool}):** `;
                 }
 
                 if (hasFilament) {
@@ -91,23 +91,24 @@ export default class FilamentsCommand extends BaseCommand {
                     
                     let statusSuffix = '';
                     if (isSlotLoaded) {
-                        statusSuffix = ' *(Active in Extruder)*';
+                        statusSuffix = ' 🔹 *(Active in Extruder)*';
                     } else if (lastLoaded === slotKey) {
-                        statusSuffix = ' *(Pre-loaded)*';
+                        statusSuffix = ' 🔸 *(Pre-loaded)*';
                     }
 
-                    description += `${colorEmoji} ${slotName}: ${vendor} ${filamentName}${statusSuffix}\n`;
+                    description += `${slotPrefix}${colorEmoji} **${vendor} ${filamentName}**${statusSuffix}\n`;
                 } else {
-                    description += `⚪ ${slotName}: *Empty*\n`;
+                    description += `${slotPrefix}🚫 *Empty*\n`;
                 }
             }
 
             // Loop through External/Extra Slots if loaded or has data (specifically slot 16)
             const extSlotKey = 'slot16';
             const extMaterial = materials[extSlotKey];
-            const extState = states[extSlotKey]; // Might be undefined or 0
+            const extState = states[extSlotKey];
+            const hasExtFilament = extState === 1 || extState === true || extMaterial !== undefined;
             
-            if (extMaterial || extState === 1) {
+            if (hasExtFilament) {
                 const extFilament = extMaterial?.filament || {};
                 const filamentName = extFilament.filament || extFilament.type || 'Unknown Filament';
                 const colorHex = extMaterial?.color || '#000000';
@@ -117,17 +118,17 @@ export default class FilamentsCommand extends BaseCommand {
                 const isExtLoaded = lastLoaded === extSlotKey && extruderLoaded;
                 
                 description += `\n__**External Spool**__\n`;
-                let slotName = `**External Slot**`;
+                let slotPrefix = `**External Slot:** `;
                 if (isExtLoaded) {
-                    slotName = `👉 **External Slot**`;
+                    slotPrefix = `👉 **External Slot:** `;
                 }
 
                 let statusSuffix = '';
                 if (isExtLoaded) {
-                    statusSuffix = ' *(Active in Extruder)*';
+                    statusSuffix = ' 🔹 *(Active in Extruder)*';
                 }
 
-                description += `${colorEmoji} ${slotName}: ${vendor} ${filamentName}${statusSuffix}\n`;
+                description += `${slotPrefix}${colorEmoji} **${vendor} ${filamentName}**${statusSuffix}\n`;
             }
 
             embed.setDescription(description);
