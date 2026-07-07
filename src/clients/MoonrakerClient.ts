@@ -83,7 +83,7 @@ export class MoonrakerClient {
         const config = new ConfigHelper()
         logRegular('Send Initial Commands...')
 
-        this.getCacheData({"method": "machine.update.status", "params": {"refresh": false}}, 'updates')
+        this.getCacheData({"method": "machine.update.status"}, 'updates')
         this.getCacheData({"method": "printer.info"}, 'printer_info')
         this.getCacheData({"method": "server.config"}, 'server_config')
         this.getCacheData({"method": "server.info"}, 'server_info')
@@ -102,7 +102,7 @@ export class MoonrakerClient {
         fileListHelper.retrieveFiles('config', 'config_files')
         fileListHelper.retrieveFiles('gcodes', 'gcode_files')
         fileListHelper.retrieveFiles('logs', 'log_files')
-        fileListHelper.retrieveFiles('timelapse', 'timelapse_files', /(.*\.mp4)/g)
+        fileListHelper.retrieveFiles('timelapse', 'timelapse_files', /(.*\.mp4)/)
 
         const subscriptionObjects: any = {
             'webhooks.state': null,
@@ -182,25 +182,22 @@ export class MoonrakerClient {
         })()
     }
 
-    public async send(message: Record<string, any>, timeout: number = 10_000) {
-        const id = Math.floor(Math.random() * 1_000_000_000) + 1
+    public async send(message: Record<string, any>, timeout: number = 10_000): Promise<any> {
+        return new Promise((resolve, reject) => {
+            const id = Math.floor(Math.random() * 1_000_000_000) + 1
 
-        message.id = id
-        message.jsonrpc = '2.0'
+            message.id = id
+            message.jsonrpc = '2.0'
 
-        requests[id] = null
+            const timer = setTimeout(() => {
+                delete requests[id]
+                reject(new Error(`Websocket request timed out after ${timeout}ms: ${JSON.stringify(message)}`))
+            }, timeout)
 
-        this.websocket.send(JSON.stringify(message))
+            requests[id] = { resolve, reject, timer }
 
-        try {
-            await waitUntil(() => requests[id] !== null, {timeout, intervalBetweenAttempts: 500})
-            const result = requests[id]
-            delete requests[id]
-            return result
-        } catch (e) {
-            delete requests[id]
-            throw e
-        }
+            this.websocket.send(JSON.stringify(message))
+        })
     }
 
     public isReady() {
@@ -324,10 +321,14 @@ export class MoonrakerClient {
 
     private getCacheData(websocketCommand: Record<string, any>, cacheKey: string) {
         void (async () => {
-            logRegular(`Retrieve Data for ${cacheKey}...`)
-            const data = await this.send(websocketCommand, 300_000)
+            try {
+                logRegular(`Retrieve Data for ${cacheKey}...`)
+                const data = await this.send(websocketCommand, 300_000)
 
-            setData(cacheKey, data.result)
+                setData(cacheKey, data.result)
+            } catch (e) {
+                logWarn(`Failed to retrieve cache data for ${cacheKey}`)
+            }
         })()
     }
 
@@ -344,7 +345,15 @@ export class MoonrakerClient {
             }
 
             if (typeof requests[messageData.id] !== 'undefined') {
-                requests[messageData.id] = messageData
+                const req = requests[messageData.id]
+                clearTimeout(req.timer)
+                delete requests[messageData.id]
+                
+                if (messageData.error) {
+                    req.reject(new Error(JSON.stringify(messageData.error)))
+                } else {
+                    req.resolve(messageData)
+                }
             }
         }))
 

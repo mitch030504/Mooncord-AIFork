@@ -2,7 +2,7 @@
 
 import {findValue, getEntry, setData, updateData} from "../utils/CacheUtil";
 import {ConfigHelper} from "./ConfigHelper";
-import {logRegular} from "./LoggerHelper";
+import {logRegular, logWarn} from "./LoggerHelper";
 import * as App from "../Application"
 import {LocaleHelper} from "./LocaleHelper";
 import {NotificationHelper} from "./NotificationHelper";
@@ -321,7 +321,13 @@ export class TempHelper {
                     .replace(/(\${heater})/g, heater)
                     .replace(/(\${target})/g, heaterData.target)
 
-                void new NotificationHelper().broadcastMessage(message)
+                void (async () => {
+                    try {
+                        await new NotificationHelper().broadcastMessage(message)
+                    } catch (e) {
+                        logWarn('Failed to broadcast temp target notification')
+                    }
+                })()
                 continue
             }
 
@@ -336,7 +342,9 @@ export class TempHelper {
     private parseFieldTitle(key: string) {
         const hideList = tempMeta.hide_types
 
-        hideList.some((hideType: any) => key = key.replace(hideType, ''))
+        for (const hideType of hideList) {
+            key = key.replace(hideType, '')
+        }
 
         if (key.startsWith(' ')) {
             key = key.substring(1)

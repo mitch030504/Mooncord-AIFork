@@ -1,7 +1,7 @@
 'use strict'
 
 import {getEntry, setData} from "../utils/CacheUtil";
-import {logRegular} from "./LoggerHelper";
+import {logRegular, logWarn} from "./LoggerHelper";
 import {getMoonrakerClient} from "../Application";
 import {getIcons} from "./DataHelper";
 import {HistoryHelper} from "./HistoryHelper";
@@ -13,32 +13,33 @@ export class FileListHelper {
 
         const message = {"method": "server.files.list", "params": {"root": root}}
         void (async () => {
-            const currentFiles = await moonrakerClient.send(message)
+            try {
+                const currentFiles = await moonrakerClient.send(message)
 
-            let result = currentFiles.result
+                let result = currentFiles.result
 
-            if (result === null || result === undefined) {
-                return
-            }
-
-            const historyHelper = new HistoryHelper()
-
-            result.sort((a: any, b: any) => (a.modified < b.modified) ? 1 : -1)
-
-            if (filter !== undefined && filter !== null) {
-                const filteredResult = []
-
-                for (const resultPartial of result) {
-                    if (!filter.test(resultPartial.path)) {
-                        continue
-                    }
-                    filteredResult.push(resultPartial)
+                if (result === null || result === undefined) {
+                    return
                 }
 
-                result = filteredResult
-            }
+                const historyHelper = new HistoryHelper()
 
-            setData(cacheKey, result)
+                result.sort((a: any, b: any) => (a.modified < b.modified) ? 1 : -1)
+
+                if (filter !== undefined && filter !== null) {
+                    const filteredResult = []
+
+                    for (const resultPartial of result) {
+                        if (!filter.test(resultPartial.path)) {
+                            continue
+                        }
+                        filteredResult.push(resultPartial)
+                    }
+
+                    result = filteredResult
+                }
+
+                setData(cacheKey, result)
 
             if (root === 'gcodes') {
                 const tempResult = []
@@ -86,6 +87,9 @@ export class FileListHelper {
                 }
 
                 setData(cacheKey, tempResult)
+            }
+            } catch (e) {
+                logWarn(`Failed to retrieve files for ${cacheKey}`)
             }
         })()
     }
