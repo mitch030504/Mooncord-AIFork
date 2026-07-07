@@ -4,7 +4,7 @@ import {ConfigHelper} from "./ConfigHelper";
 import {sleep} from "./DataHelper";
 import axios from "axios";
 import {resolve} from "path"
-import {logEmpty, logError, logRegular} from "./LoggerHelper";
+import {logEmpty, logError, logRegular, logWarn} from "./LoggerHelper";
 import {getMoonrakerClient} from "../Application";
 import {getEntry, setData} from "../utils/CacheUtil";
 import {AttachmentBuilder} from "discord.js";
@@ -16,8 +16,13 @@ export class WebcamHelper {
         const moonrakerClient = getMoonrakerClient()
         const config = new ConfigHelper()
 
-        const webcamEntries = await moonrakerClient.send({"method": "server.webcams.list"})
-        const webcamData = webcamEntries.result.webcams
+        let webcamData = []
+        try {
+            const webcamEntries = await moonrakerClient.send({"method": "server.webcams.list"})
+            webcamData = webcamEntries.result.webcams
+        } catch (e) {
+            logWarn(`Failed to retrieve webcams from Moonraker: ${e}`)
+        }
         let webcamConfigs = config.getEntriesByFilter(/^webcam(?:\s|$)/g, true)
         let activeWebcam = ''
 

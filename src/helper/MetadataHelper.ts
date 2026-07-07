@@ -7,7 +7,7 @@ import path from "path";
 import axios from "axios";
 import {updateTimes} from "./TimeHelper";
 import {updateLayers} from "./LayerHelper";
-import {logEmpty, logError, logRegular} from "./LoggerHelper"
+import {logEmpty, logError, logRegular, logWarn} from "./LoggerHelper"
 import {AttachmentBuilder} from "discord.js";
 import {readFile} from "node:fs/promises";
 import {formatTime} from "../utils/FormatUtil";
@@ -43,7 +43,12 @@ export class MetadataHelper {
             return metaData.result
         }
 
-        metaData = await getMoonrakerClient().send({"method": "server.files.metadata", "params": {filename}})
+        try {
+            metaData = await getMoonrakerClient().send({"method": "server.files.metadata", "params": {filename}})
+        } catch (e) {
+            logWarn(`Failed to get metadata for ${filename}: ${e}`)
+            return undefined
+        }
 
         if(!metaData.result) return undefined
 

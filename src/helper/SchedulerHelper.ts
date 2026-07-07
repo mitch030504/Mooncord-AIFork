@@ -11,6 +11,7 @@ import {PromptHelper} from "./PromptHelper";
 import {updateAllRestEndpoints} from "./RestApiHelper";
 import {MetadataHelper} from "./MetadataHelper";
 import {ImageHelper} from "./ImageHelper";
+import {logWarn} from "./LoggerHelper";
 
 export class SchedulerHelper {
     protected configHelper = new ConfigHelper()
@@ -77,9 +78,14 @@ export class SchedulerHelper {
 
     protected scheduleModerate() {
         this.moderateScheduler = setInterval(async () => {
-            const machineInfo = await this.moonrakerClient.send({"method": "machine.system_info"})
-
-            setData('machine_info', machineInfo.result)
+            try {
+                const machineInfo = await this.moonrakerClient.send({"method": "machine.system_info"})
+                if (machineInfo && machineInfo.result) {
+                    setData('machine_info', machineInfo.result)
+                }
+            } catch (e) {
+                logWarn(`Failed to retrieve machine system info: ${e}`)
+            }
 
             await this.usageHelper.updateDiskUsage()
 
@@ -155,31 +161,41 @@ export class SchedulerHelper {
         })
 
         const currentStatus = findValue('function.current_status')
-        const serverInfo = await this.moonrakerClient.send({"method": "server.info"})
+        try {
+            const serverInfo = await this.moonrakerClient.send({"method": "server.info"})
 
-        if (typeof serverInfo.result === 'undefined')
-            return
-        if (typeof serverInfo.result.klippy_state === 'undefined')
-            return
+            if (typeof serverInfo.result === 'undefined')
+                return
+            if (typeof serverInfo.result.klippy_state === 'undefined')
+                return
 
-        if (currentStatus !== serverInfo.result.klippy_state)
-            await this.requestPrintInfo()
+            if (currentStatus !== serverInfo.result.klippy_state)
+                await this.requestPrintInfo()
 
-        updateData('server_info', serverInfo.result)
+            updateData('server_info', serverInfo.result)
+        } catch (e) {
+            logWarn(`Failed to poll server info: ${e}`)
+        }
 
         updateData('function', {
             'server_info_in_query': false
         })
 
-        if (serverInfo.result.klippy_state === 'ready')
+        const serverInfoCached = getEntry('server_info')
+        if (serverInfoCached && serverInfoCached.klippy_state === 'ready')
             return
 
         await this.statusHelper.update()
     }
 
     private async requestPrintInfo() {
-        const printerInfo = await this.moonrakerClient.send({"method": "printer.info"})
-
-        updateData('printer_info', printerInfo.result)
+        try {
+            const printerInfo = await this.moonrakerClient.send({"method": "printer.info"})
+            if (printerInfo && printerInfo.result) {
+                updateData('printer_info', printerInfo.result)
+            }
+        } catch (e) {
+            logWarn(`Failed to request print info: ${e}`)
+        }
     }
 }

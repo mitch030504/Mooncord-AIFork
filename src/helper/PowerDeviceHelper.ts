@@ -1,7 +1,7 @@
 'use strict'
 
 import {getEntry, setData} from "../utils/CacheUtil";
-import {logRegular} from "./LoggerHelper";
+import {logRegular, logWarn} from "./LoggerHelper";
 import {LocaleHelper} from "./LocaleHelper";
 import {getMoonrakerClient} from "../Application";
 
@@ -22,13 +22,17 @@ export class PowerDeviceHelper {
     public getPowerDevices() {
         logRegular('Retrieve Power Devices...')
         void (async () => {
-            const powerDevicesData = await getMoonrakerClient().send({"method": "machine.device_power.devices"})
+            try {
+                const powerDevicesData = await getMoonrakerClient().send({"method": "machine.device_power.devices"})
 
-            if (powerDevicesData.error !== undefined) {
-                return
+                if (powerDevicesData.error !== undefined) {
+                    return
+                }
+
+                setData('power_devices', powerDevicesData.result.devices)
+            } catch (e) {
+                logWarn(`Failed to retrieve power devices: ${e}`)
             }
-
-            setData('power_devices', powerDevicesData.result.devices)
         })()
     }
 

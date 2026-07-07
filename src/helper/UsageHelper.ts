@@ -3,6 +3,7 @@
 import {findValue, updateData} from "../utils/CacheUtil";
 import * as bytes from "bytes";
 import * as App from "../Application";
+import {logWarn} from "./LoggerHelper";
 
 export class UsageHelper {
     protected moonrakerClient = App.getMoonrakerClient()
@@ -59,27 +60,31 @@ export class UsageHelper {
     }
 
     public async updateDiskUsage() {
-        const directoryInformation = await this.moonrakerClient.send({"method": "server.files.get_directory"})
+        try {
+            const directoryInformation = await this.moonrakerClient.send({"method": "server.files.get_directory"})
 
-        const diskUsageRaw = directoryInformation.result.disk_usage
+            const diskUsageRaw = directoryInformation.result.disk_usage
 
-        if (typeof diskUsageRaw === 'undefined') {
-            return
+            if (typeof diskUsageRaw === 'undefined') {
+                return
+            }
+
+            const totalDisk = (diskUsageRaw.total / (1024 ** 3))
+                .toFixed(2)
+
+            const freeDisk = (diskUsageRaw.free / (1024 ** 3))
+                .toFixed(2)
+
+            const usedDisk = (diskUsageRaw.used / (1024 ** 3))
+                .toFixed(2)
+
+            updateData('usage', {
+                'total_disk': totalDisk,
+                'used_disk': usedDisk,
+                'free_disk': freeDisk
+            })
+        } catch (e) {
+            logWarn(`Failed to update disk usage: ${e}`)
         }
-
-        const totalDisk = (diskUsageRaw.total / (1024 ** 3))
-            .toFixed(2)
-
-        const freeDisk = (diskUsageRaw.free / (1024 ** 3))
-            .toFixed(2)
-
-        const usedDisk = (diskUsageRaw.used / (1024 ** 3))
-            .toFixed(2)
-
-        updateData('usage', {
-            'total_disk': totalDisk,
-            'used_disk': usedDisk,
-            'free_disk': freeDisk
-        })
     }
 }
