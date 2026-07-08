@@ -209,6 +209,10 @@ export class MoonrakerClient {
             const timer = setTimeout(() => {
                 delete requests[id]
                 reject(new Error(`Websocket request timed out after ${timeout}ms: ${JSON.stringify(message)}`))
+                if (this.isConnected()) {
+                    logWarn('Websocket request timed out! Force closing Moonraker connection to trigger reconnect...')
+                    this.close()
+                }
             }, timeout)
 
             requests[id] = { resolve, reject, timer }
