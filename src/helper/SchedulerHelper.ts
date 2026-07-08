@@ -78,6 +78,10 @@ export class SchedulerHelper {
 
     protected scheduleModerate() {
         this.moderateScheduler = setInterval(async () => {
+            if (!this.moonrakerClient.isConnected()) {
+                return
+            }
+
             try {
                 const machineInfo = await this.moonrakerClient.send({"method": "machine.system_info"})
                 if (machineInfo && machineInfo.result) {
@@ -153,6 +157,9 @@ export class SchedulerHelper {
     }
 
     private async pollServerInfo() {
+        if (!this.moonrakerClient.isConnected())
+            return
+
         if (this.functionCache.server_info_in_query)
             return
 
@@ -189,6 +196,9 @@ export class SchedulerHelper {
     }
 
     private async requestPrintInfo() {
+        if (!this.moonrakerClient.isConnected())
+            return
+
         try {
             const printerInfo = await this.moonrakerClient.send({"method": "printer.info"})
             if (printerInfo && printerInfo.result) {

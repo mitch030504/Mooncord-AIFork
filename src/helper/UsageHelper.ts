@@ -60,6 +60,10 @@ export class UsageHelper {
     }
 
     public async updateDiskUsage() {
+        if (!this.moonrakerClient.isConnected()) {
+            return
+        }
+
         try {
             const directoryInformation = await this.moonrakerClient.send({"method": "server.files.get_directory"})
 
