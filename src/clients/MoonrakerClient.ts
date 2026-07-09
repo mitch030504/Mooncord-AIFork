@@ -234,7 +234,7 @@ export class MoonrakerClient {
             return false
         }
 
-        return Boolean(this.websocket.underlyingWebsocket.OPEN)
+        return this.websocket.underlyingWebsocket.readyState === this.websocket.underlyingWebsocket.OPEN
     }
 
     public getWebsocket() {
