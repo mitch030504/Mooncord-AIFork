@@ -28,11 +28,11 @@ export class StatusHelper {
         this.discordClient = discordClient
         let functionCache = getEntry('function')
         const serverInfo = getEntry('server_info')
-        const stateCache = getEntry('state')
-        const klipperStatus = stateCache.print_stats.state
+        const stateCache = getEntry('state') || {}
+        const klipperStatus = stateCache.print_stats?.state || 'ready'
 
-        let progress = stateCache.display_status.progress.toFixed(2)
-        if(isNaN(progress)) progress = 0
+        let progress = stateCache.display_status?.progress?.toFixed(2) || '0.00'
+        if(isNaN(progress as any)) progress = '0.00'
 
         const overrideValues: Record<string, any> = {}
 

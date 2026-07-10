@@ -13,7 +13,7 @@ import {formatPercent} from "../utils/FormatUtil";
 
 export class TempHelper {
     public generateColors() {
-        const cache = getEntry('state')
+        const cache = getEntry('state') || {}
         logRegular("Generate Sensor Colors...")
 
         const colorCache: Record<string, any> = {}
@@ -165,11 +165,11 @@ export class TempHelper {
     }
 
     public getHeaterTarget(heater: string) {
-        return getEntry('state')[heater].target
+        return getEntry('state')?.[heater]?.target || 0
     }
 
     public getHeaterTemp(heater: string) {
-        return getEntry('state')[heater].temperature
+        return getEntry('state')?.[heater]?.temperature || 0
     }
 
     public getHeaterConfigData(heater: string) {
@@ -228,7 +228,7 @@ export class TempHelper {
     }
 
     public getHeaters() {
-        return getEntry('state').heaters.available_heaters
+        return getEntry('state')?.heaters?.available_heaters || []
     }
 
     public updateHeaterTargets() {
@@ -356,7 +356,7 @@ export class TempHelper {
 
     private parseCacheFields(key: any) {
         const result: Record<string, any> = {}
-        const cache = getEntry('state')
+        const cache = getEntry('state') || {}
 
         for (const cacheKey in cache) {
             const cacheKeySplit = cacheKey.split(' ')

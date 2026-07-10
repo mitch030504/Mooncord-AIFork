@@ -5,7 +5,7 @@ import {findValue, getEntry} from "../utils/CacheUtil";
 export class MCUHelper {
 
     public getMCUOptions() {
-        const stateCache = getEntry('state')
+        const stateCache = getEntry('state') || {}
         const options = []
 
         for (const key in stateCache) {
@@ -21,7 +21,7 @@ export class MCUHelper {
     }
 
     public getMCUChoices() {
-        const stateCache = getEntry('state')
+        const stateCache = getEntry('state') || {}
         const options = []
 
         for (const key in stateCache) {

@@ -5,6 +5,14 @@ import {getEntry, updateData} from "../utils/CacheUtil"
 export function updateTimes() {
     const stateCache = getEntry('state')
     const metaDataCache = getEntry('meta_data')
+
+    if (stateCache === undefined ||
+        stateCache.print_stats === undefined ||
+        stateCache.display_status === undefined ||
+        stateCache.gcode_move === undefined) {
+        return
+    }
+
     const endTime = Math.floor(Date.now() / 1000)
 
     const duration = stateCache.print_stats.print_duration

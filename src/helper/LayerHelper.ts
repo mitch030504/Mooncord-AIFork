@@ -6,7 +6,7 @@ export function updateLayers() {
     const stateCache = getEntry('state')
     const metaDataCache = getEntry('meta_data')
 
-    if (metaDataCache === undefined) {
+    if (metaDataCache === undefined || stateCache === undefined || stateCache.gcode_move === undefined) {
         return
     }
 

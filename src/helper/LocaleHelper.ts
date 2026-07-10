@@ -55,7 +55,8 @@ export class LocaleHelper {
             }
         ]
 
-        for (const stateComponent in getEntry('state')) {
+        const state = getEntry('state') || {}
+        for (const stateComponent in state) {
             if (/(mcu)/g.test(stateComponent) && !/(temperature_sensor)/g.test(stateComponent)) {
                 components.push({
                     name: stateComponent.toUpperCase(),

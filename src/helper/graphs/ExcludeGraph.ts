@@ -1,5 +1,4 @@
-'use strict'
-
+import {AttachmentBuilder} from "discord.js";
 import {getEntry} from "../../utils/CacheUtil";
 import {logRegular} from "../LoggerHelper";
 import BaseGraph from "./BaseGraph";
@@ -9,6 +8,11 @@ export class ExcludeGraph extends BaseGraph {
 
     public async renderGraph(currentObject?: string) {
         const stateCache = getEntry('state')
+        if (stateCache === undefined ||
+            stateCache.exclude_object === undefined ||
+            stateCache.toolhead === undefined) {
+            return new AttachmentBuilder(Buffer.alloc(0), { name: this.filename })
+        }
         const excludeObjects = stateCache.exclude_object.objects
         const excludedObjects = stateCache.exclude_object.excluded_objects
         const axisMaximum = stateCache.toolhead.axis_maximum
