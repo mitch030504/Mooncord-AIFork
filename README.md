@@ -16,7 +16,9 @@ Here is how this fork compares directly to the original upstream project from a 
 | Feature / Capability | Original Mooncord (Upstream) | Mooncord-AIFork (This Project) |
 | :--- | :--- | :--- |
 | **Bed Mesh Visualizer** | 🟥 Flat, basic 2D color squares. Hard to judge bed leveling at a glance; legends and text often clip at the borders. | 🟩 **Sleek 3D Isometric Mesh View**. Visualizes your bed leveling just like Fluidd/Mainsail, complete with zero-plane grid alignment, dynamic Z-axis height scaling, and a color-gradient legend. |
-| **Read-Only Viewer Access** | ❌ All-or-nothing permissions. Non-admin users are blocked from checking status or viewing files. | 🛡️ **Granular Read-Only Access**. Non-admins can run informative commands (`/status`, `/temp`, `/info`, `/history`, `/listgcodes`, `/listlogs`, `/listtimelapses`), navigate pages, and download logs/videos. However, printer control commands (like pausing, starting prints, heating, or toggling power) remain securely restricted to admins. |
+| **QIDI Box & CFS RFID Filament Changer** | ❌ No support. Cannot display active filament or RFID cartridge data. | 🟩 **Active CFS/Box Monitoring**. Includes a dedicated `/filaments` command that queries and displays active filament colors, brands, type, active tool slots, remaining material, box temp/humidity, and active drying cycles. |
+| **State Diagnostics** | ❌ None. No simple way to export printer configuration state. | 🟩 **Full State Dumper**. Includes `/fulldump` to query, flatten, and export the entire Klipper/Moonraker status database as a clean CSV file attachment. |
+| **Read-Only Viewer Access** | ❌ All-or-nothing permissions. Non-admin users are blocked from checking status or viewing files. | 🛡️ **Granular Read-Only Access**. Non-admins can run informative commands (`/status`, `/temp`, `/info`, `/history`, `/listgcodes`, `/listlogs`, `/listtimelapses`, `/filaments`), navigate pages, and download logs/videos. However, printer control commands (like pausing, starting prints, heating, or toggling power) remain securely restricted to admins. |
 | **Printer Offline Resilience** | ⚠️ Gets stuck in a timed-out loop or stops trying to reconnect if the printer is powered off overnight, requiring a manual bot restart. | 🔄 **Automatic Auto-Recovery**. Instantly detects half-open "zombie" connections or command timeouts, resets the socket connection, and continuously attempts to reconnect silently until the printer is powered back on. |
 | **Timelapse Encoding Support** | ❌ Fails to parse complex video encoding options containing colons (e.g., `-tag:v hvc1`), causing settings corruption. | 🎥 **Full FFmpeg Argument Support**. Correctly handles advanced video processing and encoding settings, allowing you to use high-quality codecs like H.265 out of the box. |
 | **System Update Safety** | ❌ Exposes system update buttons that can accidentally corrupt firmware on closed-source Klipper printers. | 🔒 **Safety Toggles**. Hides system update options for closed-system printers (like Qidi) to prevent accidental firmware corruption. |
@@ -34,6 +36,14 @@ Run `/bedmesh` in Discord to receive an isometric 3D visualization of your bed l
 
 ---
 
+## 🦄 CFS & QIDI Box Filament Tracking
+This fork features native support for the **QIDI CFS (Changer Filament System)** and active Box Dryers:
+*   Use the **`/filaments`** command to view active filament loading state.
+*   Shows active brand, material type (PLA, PETG, ABS, etc.), hex code color, and RFID status for every slot.
+*   Shows ambient box temperature, relative humidity, active dryer state, and remaining dry cycle durations in real-time.
+
+---
+
 ## 📦 Key Features
 
 *   **Real-time Print Notifications:** Automatically sends notifications to your Discord server or DMs when a print starts, pauses, cancels, finishes, or reaches specific progress milestones (with webcam snapshots!).
@@ -42,6 +52,7 @@ Run `/bedmesh` in Discord to receive an isometric 3D visualization of your bed l
 *   **Printer Diagnostics:** Monitor hotend/bed temperatures, CPU/RAM usage of your printer host, and view system logs.
 *   **History Logs:** Look back at your recent printing sessions and total print times.
 *   **Timelapse Integration:** Download recorded print timelapse videos directly to your device via Discord.
+*   **Full State Dump:** Easily export all Moonraker variables to a spreadsheet using `/fulldump`.
 
 ---
 
